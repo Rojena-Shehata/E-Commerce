@@ -62,7 +62,7 @@ namespace E_Commerce.Presistence.Data.DataSeed
                 throw new FileNotFoundException($"Null or Empty FileName argument {fileName}");
             //E:\Course--\Route\06)API\E - CommerceSolution\E - Commerce.Presistence\Data\DataSeed\JsonFiles
             var filePath = @"../E-Commerce.Presistence/Data/DataSeed/JsonFiles/"+fileName;
-            if(File.Exists(filePath) )
+            if(!File.Exists(filePath) )
                 throw new FileNotFoundException($"File Not  Found => {fileName} ,FilePath =>{filePath}");
 
             try

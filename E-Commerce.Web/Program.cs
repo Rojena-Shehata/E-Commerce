@@ -1,5 +1,6 @@
 
 using E_Commerce.Domain.Contracts;
+using E_Commerce.Presistence.Data.DataSeed;
 using E_Commerce.Presistence.Data.DbContexts;
 using E_Commerce.Web.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,7 @@ namespace E_Commerce.Web
                 options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
             });
             // DataSedding 
-            builder.Services.AddScoped<IDataInitializer>();
+            builder.Services.AddScoped<IDataInitializer,DataInitializer>();
 
             var app = builder.Build();
 
