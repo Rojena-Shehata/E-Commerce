@@ -15,9 +15,9 @@ namespace E_Commerce.Presentation.Controllers
             _productService = productService;
         }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts()
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts([FromQuery]ProductQueryParameters parameters)
         {
-            var products=await _productService.GetAllProductsAsync();
+            var products=await _productService.GetAllProductsAsync(parameters);
             return Ok(products);
         }
         [HttpGet("{id}")]

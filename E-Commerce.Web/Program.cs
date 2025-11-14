@@ -37,12 +37,15 @@ namespace E_Commerce.Web
             //-version 14
             builder.Services.AddAutoMapper(typeof(ServicesAssemblyReference).Assembly);
 
+            #region Automapper version 15
             //-In AutoMapper version 15, It doesn't work in production without licenseKey, but work in development only
             ////builder.Services.AddAutoMapper(x => x.AddProfile<ProductProfile>());
             ////builder.Services.AddTransient<ProductPictureUrlResolver>();
             //
             //-version 15 with assembly +License key+ without license key work in development only
             //// builder.Services.AddAutoMapper(x => x.LicenseKey="",typeof(ProductProfile).Assembly);
+
+            #endregion
 
 
             /////

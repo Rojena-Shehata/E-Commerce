@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace E_Commerce.Domain.Contracts
 {
-    public interface IGenericRepository<TEntity, Tkey> where TEntity : BaseEntity<Tkey>
+    public interface IGenericRepository<TEntity, TKey> where TEntity : BaseEntity<TKey>
     {
         Task<IEnumerable<TEntity>> GetAllAsync();
-        Task<TEntity?> GetByIdAsync(Tkey id);
+        Task<IEnumerable<TEntity>> GetAllAsync(ISpecifications <TEntity, TKey> specifications);
+        Task<TEntity?> GetByIdAsync(TKey id);
         void Add(TEntity entity);
         void Delete(TEntity entity);
         void Update(TEntity entity);
