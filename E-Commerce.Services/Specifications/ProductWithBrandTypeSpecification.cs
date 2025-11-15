@@ -11,6 +11,12 @@ namespace E_Commerce.Services.Specifications
 {
     public class ProductWithBrandTypeSpecification : BaseSpecification<Product, int>
     {
+        public ProductWithBrandTypeSpecification(int id) : base(x=>x.Id==id)
+        {
+            AddInclude(x => x.ProductBrand);
+            AddInclude(x => x.ProductType);
+
+        }
         public ProductWithBrandTypeSpecification(ProductQueryParameters parameters) : base(CreateCriteria(parameters))
         {
             AddInclude(x => x.ProductBrand);
