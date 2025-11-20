@@ -22,12 +22,33 @@ namespace E_Commerce.Services.Specifications
             AddInclude(x => x.ProductBrand);
             AddInclude(x => x.ProductType);
 
+            switch (parameters.Sort)
+            {
+                case ProductSortingOptions.NameAsc:
+                    AddOrderBy(product=>product.Name);
+                    break;
+                case ProductSortingOptions.NameDesc:
+                    AddOrderByDesc(product=>product.Name);
+                    break;
+                case ProductSortingOptions.PriceAsc:
+                    AddOrderBy(product=>product.Price);
+                    break;
+                case ProductSortingOptions.PriceDesc:
+                    AddOrderByDesc(product=>product.Price);
+                    break;
+
+                default:
+                    AddOrderBy(x=>x.Name);
+                    break;
+            }
+
         }
 
         private static Expression<Func<Product,bool>> CreateCriteria(ProductQueryParameters parameters)
         {
-            return x => (!parameters.BrandId.HasValue || x.BrandId == parameters.BrandId.Value) 
-                        &&  (!parameters.TypeId.HasValue || x.TypeId == parameters.TypeId.Value);
+            return product => (!parameters.BrandId.HasValue || product.BrandId == parameters.BrandId.Value) 
+                        &&  (!parameters.TypeId.HasValue || product.TypeId == parameters.TypeId.Value)
+                        &&(string.IsNullOrEmpty(parameters.SearchByName)|| product.Name.ToLower().Contains(parameters.SearchByName.ToLower()));
 
         }
     }

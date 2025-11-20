@@ -28,6 +28,14 @@ namespace E_Commerce.Presistence
                     query = specifications.IncludeExpressions.Aggregate(query, (currentQuery, includeExp) => currentQuery.Include(includeExp));
                     
                 }
+                if(specifications.OrderBy is not null)
+                {
+                    query=query.OrderBy(specifications.OrderBy);
+                }
+                if(specifications.OrderByDesc is not null)
+                {
+                    query=query.OrderByDescending(specifications.OrderByDesc);
+                }
             }
 
 
