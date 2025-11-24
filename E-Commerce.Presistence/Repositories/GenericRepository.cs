@@ -45,5 +45,10 @@ namespace E_Commerce.Presistence.Repositories
         {
             return await _dbSet.CreateQuery(specifications).FirstOrDefaultAsync();
         }
+
+        public async Task<int> CountAsync(ISpecifications<TEntity, TKey> specifications)
+        {
+            return await _dbSet.CreateQuery(specifications).CountAsync();
+        }
     }
 }

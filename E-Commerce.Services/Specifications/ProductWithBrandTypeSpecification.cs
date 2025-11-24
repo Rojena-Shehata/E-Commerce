@@ -17,7 +17,7 @@ namespace E_Commerce.Services.Specifications
             AddInclude(x => x.ProductType);
 
         }
-        public ProductWithBrandTypeSpecification(ProductQueryParameters parameters) : base(CreateCriteria(parameters))
+        public ProductWithBrandTypeSpecification(ProductQueryParameters parameters) : base(ProductSpecificationHelper.CreateCriteria(parameters))
         {
             AddInclude(x => x.ProductBrand);
             AddInclude(x => x.ProductType);
@@ -42,14 +42,9 @@ namespace E_Commerce.Services.Specifications
                     break;
             }
 
-        }
-
-        private static Expression<Func<Product,bool>> CreateCriteria(ProductQueryParameters parameters)
-        {
-            return product => (!parameters.BrandId.HasValue || product.BrandId == parameters.BrandId.Value) 
-                        &&  (!parameters.TypeId.HasValue || product.TypeId == parameters.TypeId.Value)
-                        &&(string.IsNullOrEmpty(parameters.SearchByName)|| product.Name.ToLower().Contains(parameters.SearchByName.ToLower()));
+            ApplyPagination(parameters.PageIndex, parameters.PageSize);
 
         }
+
     }
 }

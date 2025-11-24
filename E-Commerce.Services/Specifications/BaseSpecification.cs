@@ -24,6 +24,7 @@ namespace E_Commerce.Services.Specifications
         {
             IncludeExpressions.Add(includeExp);
         }
+        //sorting
         public Expression<Func<TEntity, object>> OrderBy { get; private set; }
 
         public Expression<Func<TEntity, object>> OrderByDesc { get; private set; }
@@ -34,6 +35,18 @@ namespace E_Commerce.Services.Specifications
         protected void AddOrderByDesc(Expression<Func<TEntity,object>> expression)
         {
             OrderByDesc=expression;
+        }
+
+        //pagination
+        public int Skip { get; private set; }
+        public int Take { get; private set; }
+        public bool IsPaginated { get; private set; }
+
+        protected void ApplyPagination(int pageIndex,int pageSize)
+        {
+            IsPaginated = true;
+            Take = pageSize;
+            pageIndex=(pageIndex-1)*pageSize;
         }
     }
 }

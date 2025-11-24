@@ -15,5 +15,9 @@ namespace E_Commerce.Domain.Contracts
         public ICollection<Expression<Func<TEntity,object>>> IncludeExpressions { get;}
         public Expression<Func<TEntity,object>> OrderBy { get;}
         public Expression<Func<TEntity,object>> OrderByDesc { get;}
+        public int Skip {  get; }
+        public int Take {  get; }
+        public bool IsPaginated {  get; }
+
     }
 }

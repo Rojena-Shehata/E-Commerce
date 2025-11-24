@@ -1,4 +1,5 @@
 ﻿using E_Commerce.ServicesAbstraction;
+using E_Commerce.Shared;
 using E_Commerce.Shared.DTOs.ProductDTOs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +16,7 @@ namespace E_Commerce.Presentation.Controllers
             _productService = productService;
         }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts([FromQuery]ProductQueryParameters parameters)
+        public async Task<ActionResult<PaginatedResult<ProductDTO>>> GetAllProducts([FromQuery]ProductQueryParameters parameters)
         {
             var products=await _productService.GetAllProductsAsync(parameters);
             return Ok(products);
