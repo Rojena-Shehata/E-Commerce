@@ -27,7 +27,7 @@ namespace E_Commerce.Presistence.Data.Cofigurations
                 .WithMany()
                 .HasForeignKey(x => x.BrandId);
 
-            builder.HasOne(x => x.ProductBrand)
+            builder.HasOne(x => x.ProductType)
                 .WithMany()
                 .HasForeignKey(x => x.TypeId);
         }
