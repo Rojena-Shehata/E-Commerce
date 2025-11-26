@@ -8,6 +8,7 @@ using E_Commerce.Services.MappingProfiles;
 using E_Commerce.ServicesAbstraction;
 using E_Commerce.Web.Extensions;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using System.Threading.Tasks;
 
 namespace E_Commerce.Web
@@ -28,7 +29,7 @@ namespace E_Commerce.Web
             //DbContext
             builder.Services.AddDbContext<StoreDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
             // DataSedding 
             builder.Services.AddScoped<IDataInitializer,DataInitializer>();
@@ -52,6 +53,16 @@ namespace E_Commerce.Web
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IproductService, ProductService>();
 
+            ////Cach Redis
+            builder.Services.AddSingleton<IConnectionMultiplexer>(serviceProvider =>
+            {
+                return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection"));
+            });
+
+            builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+            builder.Services.AddScoped<IBasketService, BasketService>();
+            builder.Services.AddScoped<ICacheRepository, CacheRepository>();
+            builder.Services.AddScoped<ICacheService, CacheService>();
             var app = builder.Build();
 
             #region Seed Data
