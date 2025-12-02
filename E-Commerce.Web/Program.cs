@@ -1,8 +1,10 @@
 
 using E_Commerce.Domain.Contracts;
+using E_Commerce.Domain.Entities.IdentityModule;
 using E_Commerce.Presentation.CustomeMiddleWares;
 using E_Commerce.Presistence.Data.DataSeed;
 using E_Commerce.Presistence.Data.DbContexts;
+using E_Commerce.Presistence.IdentityData.DbContexts;
 using E_Commerce.Presistence.Repositories;
 using E_Commerce.Services;
 using E_Commerce.Services.MappingProfiles;
@@ -92,10 +94,15 @@ namespace E_Commerce.Web
                 config.InvalidModelStateResponseFactory = ApiResponseFactory.GenerateApiValidationResponse;
                 
             });
+            builder.Services.AddDbContext<StoreIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
+            });
             var app = builder.Build();
 
             #region Seed Data
             await app.MigrateDatabaseAsync();
+            await app.MigrateIdentityDatabaseAsync();
             await app.SeedDataAsync();
 
             #endregion
