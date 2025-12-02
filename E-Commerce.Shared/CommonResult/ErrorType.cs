@@ -10,7 +10,7 @@ namespace E_Commerce.Shared.CommonResult
     {
         Failure = 0,
         NotFound = 1,
-        UnAuthorized = 2,
+        Unauthorized = 2,
         Validation,
         Forbidden,
         InvalidCredentials

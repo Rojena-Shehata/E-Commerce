@@ -32,7 +32,7 @@ namespace E_Commerce.Shared.CommonResult
         }
         public static Error UnAuthorized(string code = "General.UnAuthorized", string description = "You Are Not Authorized")
         {
-            return new Error(code, description, ErrorType.UnAuthorized);
+            return new Error(code, description, ErrorType.Unauthorized);
         }
         public static Error Validation(string code = "General.Validation", string description = "Validation Error Has Occurred")
         {
