@@ -4,6 +4,7 @@ using E_Commerce.Domain.Entities.IdentityModule;
 using E_Commerce.Presentation.CustomeMiddleWares;
 using E_Commerce.Presistence.Data.DataSeed;
 using E_Commerce.Presistence.Data.DbContexts;
+using E_Commerce.Presistence.IdentityData.DataSeed;
 using E_Commerce.Presistence.IdentityData.DbContexts;
 using E_Commerce.Presistence.Repositories;
 using E_Commerce.Services;
@@ -12,6 +13,7 @@ using E_Commerce.ServicesAbstraction;
 using E_Commerce.Web.Extensions;
 using E_Commerce.Web.Factories;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
@@ -38,7 +40,8 @@ namespace E_Commerce.Web
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
             // DataSedding 
-            builder.Services.AddScoped<IDataInitializer,DataInitializer>();
+            builder.Services.AddKeyedScoped<IDataInitializer,DataInitializer>("Default");
+            builder.Services.AddKeyedScoped<IDataInitializer,IdentityDataInitializer>("Identity");
 
             //AutoMapper
             //-version 14
@@ -94,16 +97,23 @@ namespace E_Commerce.Web
                 config.InvalidModelStateResponseFactory = ApiResponseFactory.GenerateApiValidationResponse;
                 
             });
+            //Identity db
             builder.Services.AddDbContext<StoreIdentityDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
             });
+            //LightWeight than .AddIdentity<ApplicationUser,IdentityRole>()
+            //used with Custom authentication and authorization Without using pre-built services provided by IdentityFrameWork
+            builder.Services.AddIdentityCore<ApplicationUser>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<StoreIdentityDbContext>();
             var app = builder.Build();
 
             #region Seed Data
             await app.MigrateDatabaseAsync();
             await app.MigrateIdentityDatabaseAsync();
             await app.SeedDataAsync();
+            await app.SeedIdentityDataAsync();
 
             #endregion
 

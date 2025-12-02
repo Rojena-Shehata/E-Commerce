@@ -32,7 +32,17 @@ namespace E_Commerce.Web.Extensions
         public static async Task<WebApplication> SeedDataAsync(this WebApplication app)
         {
            await using var scope= app.Services.CreateAsyncScope();
-            var dataInitializerService = scope.ServiceProvider.GetRequiredService<IDataInitializer>();
+            var dataInitializerService = scope.ServiceProvider.GetKeyedService<IDataInitializer>("Default");
+
+           await dataInitializerService.InitializeAsync();
+
+            return app;
+        }
+
+        public static async Task<WebApplication> SeedIdentityDataAsync(this WebApplication app)
+        {
+           await using var scope= app.Services.CreateAsyncScope();
+            var dataInitializerService = scope.ServiceProvider.GetKeyedService<IDataInitializer>("Identity");
 
            await dataInitializerService.InitializeAsync();
 
