@@ -1,13 +1,10 @@
 ﻿using AutoMapper;
 using E_Commerce.Domain.Contracts;
 using E_Commerce.Domain.Entities.BasketModule;
+using E_Commerce.Services.Exceptions.NotFoundExceptions;
 using E_Commerce.ServicesAbstraction;
+using E_Commerce.Shared.CommonResult;
 using E_Commerce.Shared.DTOs.BasketDTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace E_Commerce.Services
 {
@@ -22,11 +19,12 @@ namespace E_Commerce.Services
             _mapper = mapper;
         }
 
-        public async Task<BasketDTO> CreateOrUpdateBasketAsync(BasketDTO basket)
+        public async Task<Result<BasketDTO>> CreateOrUpdateBasketAsync(BasketDTO basket)
         {
             var customerBasket = _mapper.Map<BasketDTO, CustomerBasket>(basket);
           var createdOrUpdatedBasket= await _basketRepository.CreateOrUpdateBasketAsync(customerBasket);
-            
+            if (createdOrUpdatedBasket is null)
+                return Error.Failure("Create Or Update Basket Failure", "Fail to Create or Update new Basket");
             return _mapper.Map<CustomerBasket, BasketDTO>(createdOrUpdatedBasket);
 
         }
@@ -36,10 +34,11 @@ namespace E_Commerce.Services
             return await _basketRepository.DeleteBasketAsync(basketId);
         }
 
-        public async Task<BasketDTO> GetBasketAsync(string basketId)
+        public async Task<Result<BasketDTO>> GetBasketAsync(string basketId)
         {
            var customerBasket= await _basketRepository.GetBasketAsync(basketId);
-
+            if (customerBasket is null)
+                return Error.NotFound("Basket.NotFound", $"Basked With Id:{basketId} IS Not Found");
             return  _mapper.Map<CustomerBasket,BasketDTO>(customerBasket);
         }
     }
