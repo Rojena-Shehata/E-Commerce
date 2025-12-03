@@ -10,13 +10,17 @@ using E_Commerce.Presistence.Repositories;
 using E_Commerce.Services;
 using E_Commerce.Services.MappingProfiles;
 using E_Commerce.ServicesAbstraction;
+using E_Commerce.Shared.DTOs.IdentityDTOs;
 using E_Commerce.Web.Extensions;
 using E_Commerce.Web.Factories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace E_Commerce.Web
@@ -73,24 +77,6 @@ namespace E_Commerce.Web
             builder.Services.AddScoped<ICacheRepository, CacheRepository>();
             builder.Services.AddScoped<ICacheService, CacheService>();
 
-            //validation options Handling
-            //builder.Services.Configure<ApiBehaviorOptions>(config =>
-            //{
-            //    config.InvalidModelStateResponseFactory=actionContext =>
-            //    {
-            //        var errors=actionContext.ModelState.Where(M=>M.Value.Errors.Any())
-            //                                .ToDictionary(x=>x.Key,x=>x.Value.Errors
-            //                                                          .Select(x=>x.ErrorMessage).ToList());
-            //        var problem = new ProblemDetails()
-            //        {
-            //            Title= "Validation Error !!",
-            //            Status=StatusCodes.Status400BadRequest,
-            //            Detail= "One or more validation errors occurred.",
-            //            Extensions = { { "Errors",errors} }
-            //        };
-            //        return new BadRequestObjectResult(problem);
-            //    };
-            //});
 
             builder.Services.Configure<ApiBehaviorOptions>(config =>
             {
@@ -107,6 +93,12 @@ namespace E_Commerce.Web
             builder.Services.AddIdentityCore<ApplicationUser>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<StoreIdentityDbContext>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+            builder.Services.Configure<JWTOptionsDTO>(builder.Configuration.GetSection("JWTOptions"));
+
+            builder.Services.AddAuthenticationService(builder.Configuration);
+
             var app = builder.Build();
 
             #region Seed Data
