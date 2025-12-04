@@ -1,8 +1,10 @@
-﻿using E_Commerce.Domain.Entities.IdentityModule;
+﻿using AutoMapper;
+using E_Commerce.Domain.Entities.IdentityModule;
 using E_Commerce.ServicesAbstraction;
 using E_Commerce.Shared.CommonResult;
 using E_Commerce.Shared.DTOs.IdentityDTOs;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -20,11 +22,13 @@ namespace E_Commerce.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IOptions<JWTOptionsDTO> _options;
+        private readonly IMapper _mapper;
 
-        public AuthenticationService(UserManager<ApplicationUser> userManager,IOptions<JWTOptionsDTO> options)
+        public AuthenticationService(UserManager<ApplicationUser> userManager,IOptions<JWTOptionsDTO> options,IMapper mapper)
         {
             _userManager = userManager;
             _options = options;
+            _mapper = mapper;
         }
 
         public async Task<bool> CheckEmailAsync(string email)
@@ -32,6 +36,44 @@ namespace E_Commerce.Services
             var user=await _userManager.FindByEmailAsync(email);
             return user is not null;
         }
+
+        public async Task<Result<AddressDTO>> CreateOrUpdateUserAddressAsync(AddressDTO addressDTO, string email)
+        {
+            var user = await _userManager.Users.Where(user => user.Email.ToLower() == email.ToLower()).Include(e => e.Address).FirstOrDefaultAsync();
+            if (user is null)
+                return Error.NotFound("User.NotFound", $"User With Email:{email} Is Not Found");
+            if(user.Address is null)
+            {
+                user.Address = _mapper.Map<Address>(addressDTO);
+            }
+            else 
+            {
+                user.Address.FirstName = addressDTO.FirstName;
+                user.Address.LastName = addressDTO.LastName;
+                user.Address.Street = addressDTO.Street;
+                user.Address.City = addressDTO.City;
+                user.Address.Country= addressDTO.Country;
+            }
+          var res= await _userManager.UpdateAsync(user);
+            if(res.Succeeded) 
+                return _mapper.Map<AddressDTO>(user.Address);
+            else
+            {
+                return res.Errors.Select(e => Error.Validation(e.Code, e.Description)).ToList();
+            }
+        }
+
+        public async Task<Result<AddressDTO>> GetCurrentUserAddressByEmailAsync(string email)
+        {
+            var user =await _userManager.Users.Where(user=>user.Email.ToLower()==email.ToLower()).Include(e=>e.Address).FirstOrDefaultAsync();
+            if(user is null)
+                return Error.NotFound("User.NotFound", $"User With Email:{email} Is Not Found");
+            if(user.Address is null)
+                return Error.NotFound("Address.NotFound", $"User With Email:{email} Does Not Have An Address");
+            return _mapper.Map<Address, AddressDTO>(user.Address);
+        }
+
+
 
         public async Task<Result<UserDTO>> GetUserByEmailAsync(string email)
         {

@@ -46,6 +46,22 @@ namespace E_Commerce.Presentation.Controllers
             var result=await _authenticationService.GetUserByEmailAsync(email);
             return HandleResult<UserDTO>(result);
         }
+        [Authorize]
+        [HttpGet("Address")]
+        public async Task<ActionResult<AddressDTO>> GetCurrentUserAddress()
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var address=await _authenticationService.GetCurrentUserAddressByEmailAsync(email);
+            return HandleResult<AddressDTO>(address);
+        }
+        [Authorize]
+        [HttpPut("Address")]
+        public async Task<ActionResult<AddressDTO>> UpdateCurrentUserAddress(AddressDTO addressDTO)
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var address=await _authenticationService.CreateOrUpdateUserAddressAsync(addressDTO,email);
+            return HandleResult<AddressDTO>(address);
+        }
 
     }
 }
