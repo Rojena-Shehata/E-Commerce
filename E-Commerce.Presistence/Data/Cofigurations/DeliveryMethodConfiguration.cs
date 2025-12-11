@@ -13,7 +13,7 @@ namespace E_Commerce.Presistence.Data.Cofigurations
     {
         public void Configure(EntityTypeBuilder<DeliveryMethod> builder)
         {
-            builder.Property(x => x.Price).HasPrecision(8, 2);
+            builder.Property(x => x.Cost).HasPrecision(8, 2);
 
             builder.Property(x => x.ShortName).HasMaxLength(50);
             builder.Property(x => x.Description).HasMaxLength(100);

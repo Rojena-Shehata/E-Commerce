@@ -15,7 +15,7 @@ namespace E_Commerce.Presistence.Data.Cofigurations
         {
             builder.Property(x=>x.SubTotal).HasPrecision(8,2);
             //Owned Address
-            builder.OwnsOne(x => x.Address, ownedNavigationEntity =>
+            builder.OwnsOne(x => x.ShipToAddress, ownedNavigationEntity =>
             {
                 ownedNavigationEntity.Property(x => x.Street).HasMaxLength(50);
                 ownedNavigationEntity.Property(x => x.City).HasMaxLength(50);
@@ -24,6 +24,13 @@ namespace E_Commerce.Presistence.Data.Cofigurations
                 ownedNavigationEntity.Property(x => x.Country).HasMaxLength(50);
             });
 
+            builder.HasMany(x => x.Items)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(x => x.DeliveryMethod)
+                .WithMany()
+                .HasForeignKey(x => x.DeliveryMethodId);
 
         }
     }

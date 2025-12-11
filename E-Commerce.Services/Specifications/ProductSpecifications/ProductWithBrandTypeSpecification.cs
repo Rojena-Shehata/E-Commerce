@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_Commerce.Services.Specifications
+namespace E_Commerce.Services.Specifications.ProductSpecifications
 {
     public class ProductWithBrandTypeSpecification : BaseSpecification<Product, int>
     {
@@ -42,7 +42,7 @@ namespace E_Commerce.Services.Specifications
                     break;
             }
 
-            ApplyPagination(parameters.PageIndex, parameters.PageSize);
+            ApplyPagination(parameters.PageNumber, parameters.PageSize);
 
         }
 

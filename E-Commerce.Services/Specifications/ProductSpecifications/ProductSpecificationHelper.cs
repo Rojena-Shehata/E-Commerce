@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_Commerce.Services.Specifications
+namespace E_Commerce.Services.Specifications.ProductSpecifications
 {
     internal static class ProductSpecificationHelper
     {
@@ -16,7 +16,7 @@ namespace E_Commerce.Services.Specifications
         {
             return product => (!parameters.BrandId.HasValue || product.BrandId == parameters.BrandId.Value)
                         && (!parameters.TypeId.HasValue || product.TypeId == parameters.TypeId.Value)
-                        && (string.IsNullOrEmpty(parameters.SearchByName) || product.Name.ToLower().Contains(parameters.SearchByName.ToLower()));
+                        && (string.IsNullOrEmpty(parameters.Search) || product.Name.ToLower().Contains(parameters.Search.ToLower()));
 
         }
     }

@@ -36,7 +36,11 @@ namespace E_Commerce.Web
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            //builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.CustomSchemaIds(type => type.ToString());
+            });
 
             //DbContext
             builder.Services.AddDbContext<StoreDbContext>(options =>
@@ -94,6 +98,7 @@ namespace E_Commerce.Web
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<StoreIdentityDbContext>();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
 
             builder.Services.Configure<JWTOptionsDTO>(builder.Configuration.GetSection("JWTOptions"));
 

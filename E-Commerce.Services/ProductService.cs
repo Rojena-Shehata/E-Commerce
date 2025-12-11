@@ -3,6 +3,7 @@ using E_Commerce.Domain.Contracts;
 using E_Commerce.Domain.Entities.ProductModule;
 using E_Commerce.Services.Exceptions.NotFoundExceptions;
 using E_Commerce.Services.Specifications;
+using E_Commerce.Services.Specifications.ProductSpecifications;
 using E_Commerce.ServicesAbstraction;
 using E_Commerce.Shared;
 using E_Commerce.Shared.CommonResult;
@@ -34,7 +35,7 @@ namespace E_Commerce.Services
             var dataToReturn= _mapper.Map<IEnumerable<ProductDTO>>(products);
             var countSpec = new ProductCountSpecification(parameters);
             var TotalCount = await productRepo.CountAsync(countSpec);
-            return new PaginatedResult<ProductDTO>(parameters.PageIndex, dataToReturn.Count(), TotalCount, dataToReturn);
+            return new PaginatedResult<ProductDTO>(parameters.PageNumber, dataToReturn.Count(), TotalCount, dataToReturn);
         }
 
         public async Task<IEnumerable<TypeDTO>> GetAllTypesAsync()
