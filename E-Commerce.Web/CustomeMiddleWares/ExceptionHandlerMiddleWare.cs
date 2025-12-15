@@ -1,5 +1,7 @@
 ﻿using E_Commerce.Services.Exceptions.NotFoundExceptions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
 
 namespace E_Commerce.Presentation.CustomeMiddleWares
 {
@@ -18,7 +20,10 @@ namespace E_Commerce.Presentation.CustomeMiddleWares
             try
             {
                 await _next.Invoke(httpContext);
-              await  HandleNotFoundEndPointAsync(httpContext);
+                if (!httpContext.Response.HasStarted)
+                {
+                    await MapStatusCodeToResponseAsync(httpContext);
+                }
             }
             catch (Exception ex)
             {
@@ -40,21 +45,32 @@ namespace E_Commerce.Presentation.CustomeMiddleWares
              
         }
 
-        private static async Task HandleNotFoundEndPointAsync(HttpContext httpContext)
+        private static async Task MapStatusCodeToResponseAsync(HttpContext httpContext)
         {
-            if(httpContext.Response.StatusCode==StatusCodes.Status404NotFound&&!httpContext.Response.HasStarted)
+
+            switch (httpContext.Response.StatusCode)
             {
-                var response = new ProblemDetails()
-                {
+                case StatusCodes.Status401Unauthorized:
+                    await HandleResponseAsync(httpContext, "You Are Not Authorized", StatusCodes.Status401Unauthorized);
+                    break;
+                case StatusCodes.Status404NotFound:
+                    await HandleResponseAsync(httpContext, $"EndPoint {httpContext.Request.Path} Not Found", StatusCodes.Status404NotFound, "EndPoint Not Found");
+                    break;
 
-                    Title = "Error While Processing The HTTP Request - EndPoint Not Found",
-                    Detail = $"EndPoint {httpContext.Request.Path} Not Found",
-                    Status = StatusCodes.Status404NotFound,
-                    Instance = httpContext.Request.Path
-                };
-                await httpContext.Response.WriteAsJsonAsync(response);
+            };
+            
+        }
+        private static async Task HandleResponseAsync(HttpContext httpContext,string detail,int statusCode,string title="")
+        {
+            var response = new ProblemDetails()
+            {
 
-            }
+                Title = $"Error While Processing The HTTP Request..{title}",
+                Detail = $"{detail}",
+                Status = statusCode,
+                Instance = httpContext.Request.Path
+            };
+            await httpContext.Response.WriteAsJsonAsync(response);
         }
     }
 }

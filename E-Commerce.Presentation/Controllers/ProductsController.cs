@@ -2,6 +2,7 @@
 using E_Commerce.ServicesAbstraction;
 using E_Commerce.Shared;
 using E_Commerce.Shared.DTOs.ProductDTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Commerce.Presentation.Controllers
@@ -22,6 +23,7 @@ namespace E_Commerce.Presentation.Controllers
             return Ok(products);
         }
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<ProductDTO>> GetProductById(int id)
         {
             var product=await _productService.GetProductByIdAsync(id);

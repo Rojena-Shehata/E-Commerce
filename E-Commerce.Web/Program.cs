@@ -1,18 +1,26 @@
 
 using E_Commerce.Domain.Contracts;
+using E_Commerce.Domain.Entities.IdentityModule;
 using E_Commerce.Presentation.CustomeMiddleWares;
 using E_Commerce.Presistence.Data.DataSeed;
 using E_Commerce.Presistence.Data.DbContexts;
+using E_Commerce.Presistence.IdentityData.DataSeed;
+using E_Commerce.Presistence.IdentityData.DbContexts;
 using E_Commerce.Presistence.Repositories;
 using E_Commerce.Services;
 using E_Commerce.Services.MappingProfiles;
 using E_Commerce.ServicesAbstraction;
+using E_Commerce.Shared.DTOs.IdentityDTOs;
 using E_Commerce.Web.Extensions;
 using E_Commerce.Web.Factories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace E_Commerce.Web
@@ -36,7 +44,8 @@ namespace E_Commerce.Web
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
             // DataSedding 
-            builder.Services.AddScoped<IDataInitializer,DataInitializer>();
+            builder.Services.AddKeyedScoped<IDataInitializer,DataInitializer>("Default");
+            builder.Services.AddKeyedScoped<IDataInitializer,IdentityDataInitializer>("Identity");
 
             //AutoMapper
             //-version 14
@@ -68,35 +77,35 @@ namespace E_Commerce.Web
             builder.Services.AddScoped<ICacheRepository, CacheRepository>();
             builder.Services.AddScoped<ICacheService, CacheService>();
 
-            //validation options Handling
-            //builder.Services.Configure<ApiBehaviorOptions>(config =>
-            //{
-            //    config.InvalidModelStateResponseFactory=actionContext =>
-            //    {
-            //        var errors=actionContext.ModelState.Where(M=>M.Value.Errors.Any())
-            //                                .ToDictionary(x=>x.Key,x=>x.Value.Errors
-            //                                                          .Select(x=>x.ErrorMessage).ToList());
-            //        var problem = new ProblemDetails()
-            //        {
-            //            Title= "Validation Error !!",
-            //            Status=StatusCodes.Status400BadRequest,
-            //            Detail= "One or more validation errors occurred.",
-            //            Extensions = { { "Errors",errors} }
-            //        };
-            //        return new BadRequestObjectResult(problem);
-            //    };
-            //});
 
             builder.Services.Configure<ApiBehaviorOptions>(config =>
             {
                 config.InvalidModelStateResponseFactory = ApiResponseFactory.GenerateApiValidationResponse;
                 
             });
+            //Identity db
+            builder.Services.AddDbContext<StoreIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
+            });
+            //LightWeight than .AddIdentity<ApplicationUser,IdentityRole>()
+            //used with Custom authentication and authorization Without using pre-built services provided by IdentityFrameWork
+            builder.Services.AddIdentityCore<ApplicationUser>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<StoreIdentityDbContext>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+            builder.Services.Configure<JWTOptionsDTO>(builder.Configuration.GetSection("JWTOptions"));
+
+            builder.Services.AddAuthenticationService(builder.Configuration);
+
             var app = builder.Build();
 
             #region Seed Data
             await app.MigrateDatabaseAsync();
+            await app.MigrateIdentityDatabaseAsync();
             await app.SeedDataAsync();
+            await app.SeedIdentityDataAsync();
 
             #endregion
 
