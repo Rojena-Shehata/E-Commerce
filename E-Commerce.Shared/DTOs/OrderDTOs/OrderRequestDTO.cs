@@ -8,7 +8,7 @@ namespace E_Commerce.Shared.DTOs.OrderDTOs
 {
     public class OrderRequestDTO
     {
-        public string BaskedId { get; set; } = default!;
+        public string BasketId { get; set; } = default!;
         public int DeliveryMethodId { get; set; }
         public AddressDTO ShipToAddress { get; set; } = default!;
     }

@@ -22,14 +22,27 @@ namespace E_Commerce.Services
         
         public async Task<Result<OrderResponseDTO>> CreateOrderAsync(OrderRequestDTO orderRequestDTO, string email)
         {
+
             if (orderRequestDTO.ShipToAddress is null)
                 return Error.NotFound("Address.NotFound","You Entered Null Address");
 
-            var customerBasket = await basketRepository.GetBasketAsync(orderRequestDTO.BaskedId);
+            var customerBasket = await basketRepository.GetBasketAsync(orderRequestDTO.BasketId);
             if (customerBasket is null)
-                return Error.NotFound("Basket.NotFound", $"Basked With Id:{orderRequestDTO.BaskedId} IS Not Found");
+                return Error.NotFound("Basket.NotFound", $"Basked With Id:{orderRequestDTO.BasketId} IS Not Found");
 
-            var orderAddress=mapper.Map<AddressDTO,OrderAddress>(orderRequestDTO.ShipToAddress);
+            // Remove Order with the same Payment Intent Id
+            if (string.IsNullOrEmpty(customerBasket.PaymentIntentId))
+                return Error.NotFound("PaymentIntentId.NotFound", "PaymentIntentId is Null or Empty");
+
+            var orderRepo = unitOfWork.GetRepository<Order, Guid>();
+
+            var orderWithPaymentIntentIdSpec = new OrderWithPaymentIntendIdSpecification(customerBasket.PaymentIntentId);
+            var existingOrder =await orderRepo.GetByIdAsync(orderWithPaymentIntentIdSpec);
+            if(existingOrder is not null)
+                orderRepo.Delete(existingOrder);
+
+            //orderAddress
+            var orderAddress =mapper.Map<AddressDTO,OrderAddress>(orderRequestDTO.ShipToAddress);
             List<OrderItem> orderItems = new List<OrderItem>();
             foreach (var item in customerBasket.Items)
             {
@@ -38,23 +51,17 @@ namespace E_Commerce.Services
                     return Error.NotFound("Product.NotFpund", $"Product In Basket With Id:{item.Id} Is Not Exist");
                 orderItems.Add(MapOrderItemFromBasketItem(item,product));
             }
+
             //delivery Method
             var deliveryMethod =await unitOfWork.GetRepository<DeliveryMethod, int>().GetByIdAsync(orderRequestDTO.DeliveryMethodId);
             if (deliveryMethod is null)
                 return Error.NotFound("DeliveryMethod.NotFound", $"Delivery Method With Id:{orderRequestDTO.DeliveryMethodId} Is Not Found");
-
-            var suTotal = orderItems.Sum(item => item.Price * item.Quantity);
-            //order
-            var order = new Order()
-            {
-                BuyerEmail = email,
-                ShipToAddress = orderAddress,
-                DeliveryMethod = deliveryMethod,
-                DeliveryMethodId = deliveryMethod.Id,
-                Items = orderItems,
-                SubTotal = suTotal,               
-            };
-            unitOfWork.GetRepository<Order,Guid>().Add(order);
+            //subTotal
+            var subTotal = orderItems.Sum(item => item.Price * item.Quantity);
+            //Add Order
+            var order = new Order(email, orderAddress, deliveryMethod, orderItems, subTotal, customerBasket.PaymentIntentId);
+            
+            orderRepo.Add(order);
            var count=await unitOfWork.SaveChangesAsync();
             if (count <= 0)
                 return Error.Failure("Order.Failed", "Order Failed To Be Created");

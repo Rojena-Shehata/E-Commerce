@@ -34,6 +34,16 @@ namespace E_Commerce.Web
             // Add services to the container.
 
             builder.Services.AddControllers();
+            //CORs
+            builder.Services.AddCors(corsOptions =>
+            {
+                corsOptions.AddPolicy("AllowAll", corsPolicyBuilder =>
+                {
+                    corsPolicyBuilder.AllowAnyHeader();
+                    corsPolicyBuilder.AllowAnyMethod();
+                    corsPolicyBuilder.AllowAnyOrigin();
+                });
+            });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             //builder.Services.AddSwaggerGen();
@@ -99,6 +109,7 @@ namespace E_Commerce.Web
                 .AddEntityFrameworkStores<StoreIdentityDbContext>();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
 
             builder.Services.Configure<JWTOptionsDTO>(builder.Configuration.GetSection("JWTOptions"));
 
@@ -127,7 +138,9 @@ namespace E_Commerce.Web
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
-
+            //CORs
+            app.UseCors("AllowAll");
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

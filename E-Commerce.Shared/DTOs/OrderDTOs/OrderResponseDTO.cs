@@ -18,6 +18,8 @@ namespace E_Commerce.Shared.DTOs.OrderDTOs
         public DateTimeOffset OrderDate {  get; init; }
         public decimal SubTotal {  get; init; }
         public decimal Total {  get; init; }
-     };
+        public string PaymentIntentId { get; init; } = default!;
+
+    };
     
 }
