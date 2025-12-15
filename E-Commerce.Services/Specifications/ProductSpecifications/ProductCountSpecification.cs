@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_Commerce.Services.Specifications
+namespace E_Commerce.Services.Specifications.ProductSpecifications
 {
     public class ProductCountSpecification : BaseSpecification<Product, int>
     {

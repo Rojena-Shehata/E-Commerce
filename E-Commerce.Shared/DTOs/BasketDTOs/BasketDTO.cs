@@ -9,7 +9,11 @@ namespace E_Commerce.Shared.DTOs.BasketDTOs
     public record BasketDTO
         (
         string Id,
-        ICollection<BasketItemDTO>Items
+        ICollection<BasketItemDTO>Items,
+        string? ClientSecret,
+        string? PaymentIntentId,
+        int? DeliveryMethodId,
+        decimal? ShippingPrice
         );
     
     

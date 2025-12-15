@@ -11,11 +11,11 @@ namespace E_Commerce.Shared.DTOs.ProductDTOs
     {
         public int? BrandId { get; set; }
         public int? TypeId { get; set; }
-        public string? SearchByName { get; set; }
+        public string? Search { get; set; }//SearchByName
         public ProductSortingOptions Sort { get; set; }
         private int _pageIndex=1;
 
-        public int PageIndex
+        public int PageNumber
         {
             get {
                 return _pageIndex; 

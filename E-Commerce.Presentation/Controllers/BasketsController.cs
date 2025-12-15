@@ -1,5 +1,6 @@
 ﻿using E_Commerce.ServicesAbstraction;
 using E_Commerce.Shared.DTOs.BasketDTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -32,7 +33,7 @@ namespace E_Commerce.Presentation.Controllers
             return Ok(basket);
 
         }
-        [HttpDelete("{id}")]
+        [HttpDelete]
         public async Task<ActionResult<bool>> DeleteBasket(string id)
         {
             var basket = await _basketService.DeleteBasketAsync(id);

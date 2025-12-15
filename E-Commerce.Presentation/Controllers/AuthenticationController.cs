@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace E_Commerce.Presentation.Controllers
 {
+    
     public class AuthenticationController : ApiBaseController
     {
         private readonly IAuthenticationService _authenticationService;
@@ -41,6 +42,15 @@ namespace E_Commerce.Presentation.Controllers
         [HttpGet("CurrentUser")]
         [Authorize]
         public async Task<ActionResult<UserDTO>> GetCurrentUser()
+        {
+            var email=User.FindFirstValue(ClaimTypes.Email);
+            var result=await _authenticationService.GetUserByEmailAsync(email);
+            return HandleResult<UserDTO>(result);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<UserDTO>> GetCurrentUser02()
         {
             var email=User.FindFirstValue(ClaimTypes.Email);
             var result=await _authenticationService.GetUserByEmailAsync(email);

@@ -4,6 +4,7 @@ using E_Commerce.Presistence.Data.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_Commerce.Presistence.Data.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    partial class StoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251204082201_CreateOrderModuleTables")]
+    partial class CreateOrderModuleTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,10 +33,6 @@ namespace E_Commerce.Presistence.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Cost")
-                        .HasPrecision(8, 2)
-                        .HasColumnType("decimal(8,2)");
-
                     b.Property<string>("DeliveryTime")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -43,6 +42,10 @@ namespace E_Commerce.Presistence.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(8, 2)
+                        .HasColumnType("decimal(8,2)");
 
                     b.Property<string>("ShortName")
                         .IsRequired()
@@ -60,26 +63,22 @@ namespace E_Commerce.Presistence.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("BuyerEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("DeliveryMethodId")
                         .HasColumnType("int");
 
                     b.Property<DateTimeOffset>("OrderDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("PaymentIntentId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Status")
+                    b.Property<int>("OrderStatus")
                         .HasColumnType("int");
 
                     b.Property<decimal>("SubTotal")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal(8,2)");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -199,7 +198,7 @@ namespace E_Commerce.Presistence.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("E_Commerce.Domain.Entities.OrderModule.OrderAddress", "ShipToAddress", b1 =>
+                    b.OwnsOne("E_Commerce.Domain.Entities.OrderModule.OrderAddress", "Address", b1 =>
                         {
                             b1.Property<Guid>("OrderId")
                                 .HasColumnType("uniqueidentifier");
@@ -237,18 +236,17 @@ namespace E_Commerce.Presistence.Data.Migrations
                                 .HasForeignKey("OrderId");
                         });
 
-                    b.Navigation("DeliveryMethod");
-
-                    b.Navigation("ShipToAddress")
+                    b.Navigation("Address")
                         .IsRequired();
+
+                    b.Navigation("DeliveryMethod");
                 });
 
             modelBuilder.Entity("E_Commerce.Domain.Entities.OrderModule.OrderItem", b =>
                 {
                     b.HasOne("E_Commerce.Domain.Entities.OrderModule.Order", null)
                         .WithMany("Items")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("OrderId");
 
                     b.OwnsOne("E_Commerce.Domain.Entities.OrderModule.ProductItemOrdered", "Product", b1 =>
                         {
