@@ -8,20 +8,14 @@ using E_Commerce.Presistence.IdentityData.DataSeed;
 using E_Commerce.Presistence.IdentityData.DbContexts;
 using E_Commerce.Presistence.Repositories;
 using E_Commerce.Services;
-using E_Commerce.Services.MappingProfiles;
 using E_Commerce.ServicesAbstraction;
 using E_Commerce.Shared.DTOs.IdentityDTOs;
 using E_Commerce.Web.Extensions;
 using E_Commerce.Web.Factories;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace E_Commerce.Web
 {
@@ -78,7 +72,6 @@ namespace E_Commerce.Web
 
             /////
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IproductService, ProductService>();
 
             ////Cach Redis
             builder.Services.AddSingleton<IConnectionMultiplexer>(serviceProvider =>
@@ -87,7 +80,6 @@ namespace E_Commerce.Web
             });
 
             builder.Services.AddScoped<IBasketRepository, BasketRepository>();
-            builder.Services.AddScoped<IBasketService, BasketService>();
             builder.Services.AddScoped<ICacheRepository, CacheRepository>();
             builder.Services.AddScoped<ICacheService, CacheService>();
 
@@ -107,10 +99,7 @@ namespace E_Commerce.Web
             builder.Services.AddIdentityCore<ApplicationUser>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<StoreIdentityDbContext>();
-            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-            builder.Services.AddScoped<IOrderService, OrderService>();
-            builder.Services.AddScoped<IPaymentService, PaymentService>();
-
+            builder.Services.AddScoped<IServiceManager, ServiceManagerLazyImplementation>();
             builder.Services.Configure<JWTOptionsDTO>(builder.Configuration.GetSection("JWTOptions"));
 
             builder.Services.AddAuthenticationService(builder.Configuration);

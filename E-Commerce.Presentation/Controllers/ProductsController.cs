@@ -9,37 +9,37 @@ namespace E_Commerce.Presentation.Controllers
 {
     public class ProductsController : ApiBaseController
     {
-        private readonly IproductService _productService;
+        private readonly IServiceManager _serviceManager;
 
-        public ProductsController(IproductService productService)
+        public ProductsController(IServiceManager serviceManager)
         {
-            _productService = productService;
+            _serviceManager = serviceManager;
         }
         [HttpGet]
         [RedisCache]
         public async Task<ActionResult<PaginatedResult<ProductDTO>>> GetAllProducts([FromQuery]ProductQueryParameters parameters)
         {
-            var products=await _productService.GetAllProductsAsync(parameters);
+            var products=await _serviceManager.ProductService.GetAllProductsAsync(parameters);
             return Ok(products);
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDTO>> GetProductById(int id)
         {
-            var product=await _productService.GetProductByIdAsync(id);
+            var product=await _serviceManager.ProductService.GetProductByIdAsync(id);
             return HandleResult<ProductDTO>(product);
         }
         //Get:baseURL/api/products/types
         [HttpGet("types")]
         public async Task<ActionResult<IEnumerable<TypeDTO>>> GetAllTypes()
         {
-            var types=await _productService.GetAllTypesAsync();
+            var types=await _serviceManager.ProductService.GetAllTypesAsync();
             return Ok(types);
         }
         //Get:baseURL/api/products/types
         [HttpGet("brands")]
         public async Task<ActionResult< IEnumerable<BrandDTO>>> GetAllBrands()
         {
-            var brands=await _productService.GetAllBrandsAsync();
+            var brands=await _serviceManager.ProductService.GetAllBrandsAsync();
             return Ok(brands);
         }
     }

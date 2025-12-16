@@ -14,29 +14,29 @@ namespace E_Commerce.Presentation.Controllers
 {
     public class BasketsController: ApiBaseController
     {
-        private readonly IBasketService _basketService;
+        private readonly IServiceManager _serviceManager;
 
-        public BasketsController(IBasketService basketService)
+        public BasketsController(IServiceManager serviceManager)
         {
-            _basketService = basketService;
+            _serviceManager = serviceManager;
         }
         [HttpGet]
         public async Task<ActionResult<BasketDTO> >GetBasket(string id)
         {
-            var basket=await _basketService.GetBasketAsync(id);
+            var basket=await _serviceManager.BasketService.GetBasketAsync(id);
             return HandleResult<BasketDTO>(basket);
         }
         [HttpPost]
         public async Task<ActionResult<BasketDTO>> CreateOrUpdateBasket(BasketDTO basketInput)
         {
-            var basket = await _basketService.CreateOrUpdateBasketAsync(basketInput);
+            var basket = await _serviceManager.BasketService.CreateOrUpdateBasketAsync(basketInput);
             return Ok(basket);
 
         }
         [HttpDelete]
         public async Task<ActionResult<bool>> DeleteBasket(string id)
         {
-            var basket = await _basketService.DeleteBasketAsync(id);
+            var basket = await _serviceManager.BasketService.DeleteBasketAsync(id);
             return Ok(basket);
 
         }

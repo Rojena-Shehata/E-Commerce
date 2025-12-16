@@ -15,11 +15,11 @@ namespace E_Commerce.Presentation.Controllers
 {
     public class OrdersController:ApiBaseController
     {
-        private readonly IOrderService _orderService;
+        private readonly IServiceManager _serviceManager;
 
-        public OrdersController(IOrderService orderService)
+        public OrdersController(IServiceManager serviceManager)
         {
-            _orderService = orderService;
+            _serviceManager = serviceManager;
         }
         ////}
         [Authorize]
@@ -27,7 +27,7 @@ namespace E_Commerce.Presentation.Controllers
         public async Task<ActionResult> CreateOrder(OrderRequestDTO orderRequestDTO)
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
-            var result = await _orderService.CreateOrderAsync(orderRequestDTO, email);
+            var result = await _serviceManager.OrderService.CreateOrderAsync(orderRequestDTO, email);
             return HandleResult<OrderResponseDTO>(result);
         }
         [Authorize]
@@ -35,7 +35,7 @@ namespace E_Commerce.Presentation.Controllers
         public async Task<ActionResult<OrderResponseDTO>> GetOrderForSpecificUserById(Guid id)
         {
             var emaail = GetUserEmail();
-            var result =await _orderService.GetOrderForSpecificUserAsync(id, emaail);
+            var result =await _serviceManager.OrderService.GetOrderForSpecificUserAsync(id, emaail);
             return HandleResult<OrderResponseDTO>(result);
         }
         [Authorize]
@@ -43,14 +43,14 @@ namespace E_Commerce.Presentation.Controllers
         public async Task<ActionResult<IEnumerable<OrderResponseDTO>>> GetOrderForSpecificUserById()
         {
             var emaail = GetUserEmail();
-            var result =await _orderService.GetAllOrdersForSpecificUserAsync(emaail);
+            var result =await _serviceManager.OrderService.GetAllOrdersForSpecificUserAsync(emaail);
             return HandleResult(result);
         }
 
         [HttpGet("deliveryMethods")]
         public async Task<ActionResult<IEnumerable<DeliveryMethodDTO>>> GetAllDeliveryMethods()
         {
-            var result=await _orderService.GetAllDeliveryMethodsAsync();
+            var result=await _serviceManager.OrderService.GetAllDeliveryMethodsAsync();
             return HandleResult<IEnumerable<DeliveryMethodDTO>>(result);
         }
 
