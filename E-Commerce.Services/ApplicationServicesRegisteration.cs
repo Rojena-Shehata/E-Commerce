@@ -12,8 +12,31 @@ namespace E_Commerce.Services
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            services.AddScoped<IServiceManager, ServiceManagerLazyImplementation>();
+            services.AddScoped<IServiceManager, ServiceManagerWithFactoryDelegate>();
             services.AddScoped<ICacheService, CacheService>();
+
+            services.AddScoped<IproductService, ProductService>();
+            services.AddScoped<Func<IproductService>>(serviceProvider => 
+                                                                       () => serviceProvider.GetRequiredService<IproductService>());
+
+            services.AddScoped<IBasketService, BasketService>();
+            services.AddScoped<Func<IBasketService>>(serviceProvider =>
+                                                                      () => serviceProvider.GetRequiredService<IBasketService>());
+
+            services.AddScoped<IPaymentService,PaymentService>();
+            services.AddScoped<Func<IPaymentService>>(serviceProvider => 
+                                                                       () => serviceProvider.GetRequiredService<IPaymentService>());
+
+            services.AddScoped<IOrderService,OrderService>();
+            services.AddScoped<Func<IOrderService>>(serviceProvider => 
+                                                                      () => serviceProvider.GetRequiredService<IOrderService>());
+
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<Func<IAuthenticationService>>(serviceProvider=>
+                                                                             ()=> serviceProvider.GetRequiredService<IAuthenticationService>());
+
+
+
 
             //AutoMapper
             //-version 14
