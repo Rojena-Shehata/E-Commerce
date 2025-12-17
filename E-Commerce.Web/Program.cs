@@ -2,6 +2,7 @@
 using E_Commerce.Domain.Contracts;
 using E_Commerce.Domain.Entities.IdentityModule;
 using E_Commerce.Presentation.CustomeMiddleWares;
+using E_Commerce.Presistence;
 using E_Commerce.Presistence.Data.DataSeed;
 using E_Commerce.Presistence.Data.DbContexts;
 using E_Commerce.Presistence.IdentityData.DataSeed;
@@ -29,99 +30,35 @@ namespace E_Commerce.Web
 
             builder.Services.AddControllers();
             //CORs
-            builder.Services.AddCors(corsOptions =>
-            {
-                corsOptions.AddPolicy("AllowAll", corsPolicyBuilder =>
-                {
-                    corsPolicyBuilder.AllowAnyHeader();
-                    corsPolicyBuilder.AllowAnyMethod();
-                    corsPolicyBuilder.AllowAnyOrigin();
-                });
-            });
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            //builder.Services.AddSwaggerGen();
-            builder.Services.AddSwaggerGen(options =>
-            {
-                options.CustomSchemaIds(type => type.ToString());
-            });
+            builder.Services.AddCORsPolicy();
 
-            //DbContext
-            builder.Services.AddDbContext<StoreDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
-            // DataSedding 
-            builder.Services.AddKeyedScoped<IDataInitializer,DataInitializer>("Default");
-            builder.Services.AddKeyedScoped<IDataInitializer,IdentityDataInitializer>("Identity");
+            builder.Services.AddSwaggerServices();
+            builder.Services.AddInfrastructureServices(builder.Configuration);
+            builder.Services.AddApplicationServices();
 
-            //AutoMapper
-            //-version 14
-            builder.Services.AddAutoMapper(typeof(ServicesAssemblyReference).Assembly);
+            builder.Services.ConfigureApiBehaviourOptions();
 
-            #region Automapper version 15
-            //-In AutoMapper version 15, It doesn't work in production without licenseKey, but work in development only
-            ////builder.Services.AddAutoMapper(x => x.AddProfile<ProductProfile>());
-            ////builder.Services.AddTransient<ProductPictureUrlResolver>();
-            //
-            //-version 15 with assembly +License key+ without license key work in development only
-            //// builder.Services.AddAutoMapper(x => x.LicenseKey="",typeof(ProductProfile).Assembly);
-
-            #endregion
-
-
-            /////
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-            ////Cach Redis
-            builder.Services.AddSingleton<IConnectionMultiplexer>(serviceProvider =>
-            {
-                return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection"));
-            });
-
-            builder.Services.AddScoped<IBasketRepository, BasketRepository>();
-            builder.Services.AddScoped<ICacheRepository, CacheRepository>();
-            builder.Services.AddScoped<ICacheService, CacheService>();
-
-
-            builder.Services.Configure<ApiBehaviorOptions>(config =>
-            {
-                config.InvalidModelStateResponseFactory = ApiResponseFactory.GenerateApiValidationResponse;
-                
-            });
-            //Identity db
-            builder.Services.AddDbContext<StoreIdentityDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
-            });
-            //LightWeight than .AddIdentity<ApplicationUser,IdentityRole>()
-            //used with Custom authentication and authorization Without using pre-built services provided by IdentityFrameWork
-            builder.Services.AddIdentityCore<ApplicationUser>()
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<StoreIdentityDbContext>();
-            builder.Services.AddScoped<IServiceManager, ServiceManagerLazyImplementation>();
             builder.Services.Configure<JWTOptionsDTO>(builder.Configuration.GetSection("JWTOptions"));
 
             builder.Services.AddAuthenticationService(builder.Configuration);
 
+            /////////////////////
             var app = builder.Build();
 
             #region Seed Data
+
             await app.MigrateDatabaseAsync();
             await app.MigrateIdentityDatabaseAsync();
             await app.SeedDataAsync();
             await app.SeedIdentityDataAsync();
 
             #endregion
-
-            //Exception Handler MiddleWare
-            app.UseMiddleware<ExceptionHandlerMiddleWare>();
+            app.UseCustomExceptionMiddleWare();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerMiddleWares();
             }
 
             app.UseHttpsRedirection();
