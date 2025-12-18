@@ -13,18 +13,18 @@ namespace E_Commerce.Presentation.Controllers
 {
     public class PaymentsController : ApiBaseController
     {
-        private readonly IPaymentService _paymentService;
+        private readonly IServiceManager _paymentService;
 
-        public PaymentsController(IPaymentService paymentService)
+        public PaymentsController(IServiceManager serviceManager)
         {
-            _paymentService = paymentService;
+            _paymentService = serviceManager;
         }
         
         [HttpPost("{basketId}")]
         [Authorize]
         public async Task<ActionResult<BasketDTO>> CreateORUpdatePaymentIntent02(string basketId)
         {
-            var basket =await _paymentService.CreateORUpdatePaymentIntentAsync(basketId);
+            var basket =await _paymentService.PaymentService.CreateORUpdatePaymentIntentAsync(basketId);
             return HandleResult(basket);
         }
         //stripe listen --forward-to https://localhost:7047/api/Payments/webhook
@@ -35,7 +35,7 @@ namespace E_Commerce.Presentation.Controllers
             var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
             
                   var signatureHeader = Request.Headers["Stripe-Signature"];
-                await _paymentService.UpdateOrderPaymentStatus(json, signatureHeader);
+                await _paymentService.PaymentService.UpdateOrderPaymentStatus(json, signatureHeader);
                 
                 return new EmptyResult();
                                

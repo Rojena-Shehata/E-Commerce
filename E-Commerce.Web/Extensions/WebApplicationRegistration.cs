@@ -1,4 +1,5 @@
 ﻿using E_Commerce.Domain.Contracts;
+using E_Commerce.Presentation.CustomeMiddleWares;
 using E_Commerce.Presistence.Data.DbContexts;
 using E_Commerce.Presistence.IdentityData.DbContexts;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,8 @@ namespace E_Commerce.Web.Extensions
                    await dbContextService.Database.MigrateAsync();
             return app;
         }
+
+
         public static async Task<WebApplication> MigrateIdentityDatabaseAsync(this WebApplication app)
         {
           await using var scope=app.Services.CreateAsyncScope();
@@ -29,6 +32,7 @@ namespace E_Commerce.Web.Extensions
             return app;
         }
 
+
         public static async Task<WebApplication> SeedDataAsync(this WebApplication app)
         {
            await using var scope= app.Services.CreateAsyncScope();
@@ -39,12 +43,30 @@ namespace E_Commerce.Web.Extensions
             return app;
         }
 
+
         public static async Task<WebApplication> SeedIdentityDataAsync(this WebApplication app)
         {
            await using var scope= app.Services.CreateAsyncScope();
             var dataInitializerService = scope.ServiceProvider.GetKeyedService<IDataInitializer>("Identity");
 
            await dataInitializerService.InitializeAsync();
+
+            return app;
+        }
+
+
+        public static IApplicationBuilder UseCustomExceptionMiddleWare(this IApplicationBuilder app)
+        {
+            //Exception Handler MiddleWare
+            app.UseMiddleware<ExceptionHandlerMiddleWare>();
+
+            return app;
+        }
+
+        public static IApplicationBuilder UseSwaggerMiddleWares(this IApplicationBuilder app)
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             return app;
         }

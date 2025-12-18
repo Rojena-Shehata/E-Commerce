@@ -14,28 +14,28 @@ namespace E_Commerce.Presentation.Controllers
     
     public class AuthenticationController : ApiBaseController
     {
-        private readonly IAuthenticationService _authenticationService;
+        private readonly IServiceManager _serviceManager;
 
-        public AuthenticationController(IAuthenticationService authenticationService)
+        public AuthenticationController(IServiceManager serviceManager)
         {
-            _authenticationService = authenticationService;
+            _serviceManager = serviceManager;
         }
         [HttpPost("Login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
         {
-            var result=await _authenticationService.LoginAsync(loginDTO);
+            var result=await _serviceManager.AuthenticationService.LoginAsync(loginDTO);
             return HandleResult<UserDTO>(result);
         }
         [HttpPost("Register")]
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDTO)
         {
-            var result=await _authenticationService.RegisterAsync(registerDTO);
+            var result=await _serviceManager.AuthenticationService.RegisterAsync(registerDTO);
             return HandleResult<UserDTO>(result);
         }
         [HttpGet("emailExists")]
         public async Task<ActionResult<bool>> EmailExists(string email)
         {
-            var DoesEmailExist=await _authenticationService.CheckEmailAsync(email);
+            var DoesEmailExist=await _serviceManager.AuthenticationService.CheckEmailAsync(email);
             return Ok(DoesEmailExist);
         }
 
@@ -44,7 +44,7 @@ namespace E_Commerce.Presentation.Controllers
         public async Task<ActionResult<UserDTO>> GetCurrentUser()
         {
             var email=User.FindFirstValue(ClaimTypes.Email);
-            var result=await _authenticationService.GetUserByEmailAsync(email);
+            var result=await _serviceManager.AuthenticationService.GetUserByEmailAsync(email);
             return HandleResult<UserDTO>(result);
         }
 
@@ -53,7 +53,7 @@ namespace E_Commerce.Presentation.Controllers
         public async Task<ActionResult<UserDTO>> GetCurrentUser02()
         {
             var email=User.FindFirstValue(ClaimTypes.Email);
-            var result=await _authenticationService.GetUserByEmailAsync(email);
+            var result=await _serviceManager.AuthenticationService.GetUserByEmailAsync(email);
             return HandleResult<UserDTO>(result);
         }
         [Authorize]
@@ -61,7 +61,7 @@ namespace E_Commerce.Presentation.Controllers
         public async Task<ActionResult<AddressDTO>> GetCurrentUserAddress()
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
-            var address=await _authenticationService.GetCurrentUserAddressByEmailAsync(email);
+            var address=await _serviceManager.AuthenticationService.GetCurrentUserAddressByEmailAsync(email);
             return HandleResult<AddressDTO>(address);
         }
         [Authorize]
@@ -69,7 +69,7 @@ namespace E_Commerce.Presentation.Controllers
         public async Task<ActionResult<AddressDTO>> UpdateCurrentUserAddress(AddressDTO addressDTO)
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
-            var address=await _authenticationService.CreateOrUpdateUserAddressAsync(addressDTO,email);
+            var address=await _serviceManager.AuthenticationService.CreateOrUpdateUserAddressAsync(addressDTO,email);
             return HandleResult<AddressDTO>(address);
         }
 
