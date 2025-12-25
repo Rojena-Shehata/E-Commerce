@@ -16,7 +16,7 @@ namespace E_Commerce.Services.Specifications
         {
             Criteria = criteria;
         }
-        public Expression<Func<TEntity, bool>> Criteria { get; private set; }
+        public Expression<Func<TEntity, bool>>? Criteria { get; private set; }
 
         public ICollection<Expression<Func<TEntity, object>>> IncludeExpressions { get; } = [];
       

@@ -3,10 +3,12 @@ using E_Commerce.Domain.Entities;
 using E_Commerce.Domain.Entities.OrderModule;
 using E_Commerce.Domain.Entities.ProductModule;
 using E_Commerce.Presistence.Data.DbContexts;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -17,10 +19,12 @@ namespace E_Commerce.Presistence.Data.DataSeed
     public class DataInitializer : IDataInitializer
     {
         private readonly StoreDbContext _dbContext;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public DataInitializer(StoreDbContext dbContext)
+        public DataInitializer(StoreDbContext dbContext,IWebHostEnvironment webHostEnvironment)
         {
             _dbContext = dbContext;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task InitializeAsync()
@@ -68,7 +72,7 @@ namespace E_Commerce.Presistence.Data.DataSeed
             if (string.IsNullOrWhiteSpace(fileName))
                 throw new FileNotFoundException($"Null or Empty FileName argument {fileName}");
             //E:\Course--\Route\06)API\E - CommerceSolution\E - Commerce.Presistence\Data\DataSeed\JsonFiles
-            var filePath = @"../E-Commerce.Presistence/Data/DataSeed/JsonFiles/"+fileName;
+            var filePath = Path.Combine(_webHostEnvironment.ContentRootPath,"Data","JsonFiles", fileName); ;
             if(!File.Exists(filePath) )
                 throw new FileNotFoundException($"File Not  Found => {fileName} ,FilePath =>{filePath}");
 

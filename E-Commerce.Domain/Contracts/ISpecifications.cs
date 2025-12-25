@@ -11,7 +11,7 @@ namespace E_Commerce.Domain.Contracts
     //specification pattern
     public interface ISpecifications<TEntity, TKey> where TEntity : BaseEntity<TKey>
     {
-        public Expression<Func<TEntity,bool>> Criteria { get;  }
+        public Expression<Func<TEntity,bool>>? Criteria { get;  }
         public ICollection<Expression<Func<TEntity,object>>> IncludeExpressions { get;}
         public Expression<Func<TEntity,object>> OrderBy { get;}
         public Expression<Func<TEntity,object>> OrderByDesc { get;}
