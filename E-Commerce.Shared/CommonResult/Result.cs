@@ -10,7 +10,7 @@ namespace E_Commerce.Shared.CommonResult
     public class Result
     {
         private List<Error> _errors = [];
-        public bool IsSucceed => _errors.Count == 0;
+        public bool IsSucceed { get; }
         public bool IFail => !IsSucceed;
         public IReadOnlyList<Error> Errors => _errors;
         //in succeed

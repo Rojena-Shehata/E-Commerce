@@ -20,4 +20,8 @@
     <ProjectReference Include="..\E-Commerce.Presistence\E-Commerce.Presistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
+
 </Project>
