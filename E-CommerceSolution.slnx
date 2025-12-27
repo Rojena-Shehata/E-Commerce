@@ -11,5 +11,9 @@
     <Project Path="E-Commerce.Presentation/E-Commerce.Presentation.csproj" />
     <Project Path="E-Commerce.Web/E-Commerce.Web.csproj" />
   </Folder>
+  <Folder Name="/UILayer/" />
+  <Folder Name="/UILayer/AdminDashboard/">
+    <Project Path="Admin.Dashboard/Admin.Dashboard.csproj" Id="41d0d64c-17a2-403f-aa6a-10849ff83752" />
+  </Folder>
   <Project Path="E-Commerce.Shared/E-Commerce.Shared.csproj" />
 </Solution>
