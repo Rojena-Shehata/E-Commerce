@@ -36,8 +36,8 @@ namespace E_Commerce.Presentation.Controllers
         [HttpDelete]
         public async Task<ActionResult<bool>> DeleteBasket(string id)
         {
-            var basket = await _serviceManager.BasketService.DeleteBasketAsync(id);
-            return Ok(basket);
+            var IsDeleted = await _serviceManager.BasketService.DeleteBasketAsync(id);
+            return Ok(IsDeleted);
 
         }
 
