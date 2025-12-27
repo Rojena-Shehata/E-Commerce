@@ -15,8 +15,8 @@ namespace E_Commerce.Shared.CommonResult
         public IReadOnlyList<Error> Errors => _errors;
         //in succeed
         protected Result() 
-        { 
-        }
+        {
+            IsSucceed = true;        }
         //in fail with one error
         protected Result(Error error)
         {

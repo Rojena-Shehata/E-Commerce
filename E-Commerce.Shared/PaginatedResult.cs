@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace E_Commerce.Shared
 {
-    public record class PaginatedResult<TEntity>(int PageIndex, int PageSize, int Count, IEnumerable<TEntity> Data);
+    public record  PaginatedResult<TEntity>(int PageIndex, int PageSize, int Count, IEnumerable<TEntity> Data);
 //    public class PaginatedResult<TEntity>
 //    {
 //        public PaginatedResult(int pageIndex, int pageSize, int count, IEnumerable<TEntity> data)

@@ -14,7 +14,7 @@ namespace E_Commerce.Shared.DTOs.BasketDTOs
             string PictureUrl,
             [Range(1,int.MaxValue,ErrorMessage ="Price must be greater than 0")]
             decimal Price,
-            [Range(1,int.MaxValue,ErrorMessage ="Price must be greater than 0")]
+            [Range(1,int.MaxValue,ErrorMessage ="Quantity must be greater than 0")]
             int Quantity
         );
     
