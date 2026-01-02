@@ -1,6 +1,8 @@
 using E_Commerce.Domain.Entities.IdentityModule;
 using E_Commerce.Presistence.Data.DbContexts;
 using E_Commerce.Presistence.IdentityData.DbContexts;
+using E_Commerce.Services;
+using E_Commerce.ServicesAbstraction;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,6 +30,9 @@ namespace Admin.Dashboard
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                             .AddEntityFrameworkStores<StoreIdentityDbContext>()
                             .AddDefaultTokenProviders();
+
+            //
+            builder.Services.AddScoped<IRoleService, RoleService>();
 
             var app = builder.Build();
 
