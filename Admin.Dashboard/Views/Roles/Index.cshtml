@@ -2,7 +2,15 @@
 @{
     ViewData["Title"] = "Index";
 }
+@if (TempData["SuccessMessage"] is not null)
+{
 
+    <div id="Alert" class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
 <div class="main-panel">
     <div class="row">
         
@@ -24,6 +32,10 @@
 
                             
                     </header>
+
+                    @*Partial Form*@
+                    <partial name="_RoleForm" model="new RoleFormViewModel()" />
+
                     @if (Model is not null && Model.Any())
                     {
                     <div class="d-flex justify-content-between align-items-center p-3 border rounded shadow-sm bg-white">
@@ -74,3 +86,8 @@
         
     </div>
 </div>
+
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}

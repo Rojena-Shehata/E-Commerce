@@ -1,0 +1,14 @@
+﻿@model RoleFormViewModel
+
+@Html.ValidationMessage("Error", new { @class = "text-danger" })
+<form method="post" asp-action="Add" class="mb-3">
+    <div class="input-group mb-3" >
+       
+        <input asp-for="Name" placeholder="Role Name ..." class="form-control " />
+
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-success ms-3">Add New Role</button>
+        </div>
+    </div>
+    <span asp-validation-for="Name" class="text-danger"></span>
+</form>
