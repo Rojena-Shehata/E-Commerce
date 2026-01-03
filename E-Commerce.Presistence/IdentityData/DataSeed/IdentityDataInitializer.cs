@@ -1,11 +1,15 @@
 ﻿using E_Commerce.Domain.Contracts;
 using E_Commerce.Domain.Entities.IdentityModule;
+using E_Commerce.Shared.Constants;
+using E_Commerce.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,8 +37,9 @@ namespace E_Commerce.Presistence.IdentityData.DataSeed
 
                 if (!await _roleManager.Roles.AnyAsync())
                 {
-                    await _roleManager.CreateAsync(new IdentityRole("Admin"));
-                    await _roleManager.CreateAsync(new IdentityRole("SuperAdmin"));
+                    await _roleManager.CreateAsync(new IdentityRole(Roles.Admin.ToString()));
+                    await _roleManager.CreateAsync(new IdentityRole(Roles.SuperAdmin.ToString()));
+                    await _roleManager.CreateAsync(new IdentityRole(Roles.Basic.ToString()));
                 }
 
                 if(! await _userManager.Users.AnyAsync())
@@ -56,14 +61,42 @@ namespace E_Commerce.Presistence.IdentityData.DataSeed
                     await _userManager.CreateAsync(user01,"P@ssw0rd");
                     await _userManager.CreateAsync(user02,"P@ssw0rd");
 
-                    await _userManager.AddToRoleAsync(user01,"SuperAdmin");
-                    await _userManager.AddToRoleAsync(user02, "Admin");
+                    await _userManager.AddToRolesAsync(user01, [Roles.SuperAdmin.ToString(),Roles.Admin.ToString(),Roles.Basic.ToString()]);
+                    await _userManager.AddToRoleAsync(user02, Roles.Admin.ToString());
+
                 }
+
+                // SeedClaims
+                await SeedClaimsForSuperAdminAsync(_roleManager);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error While Seeding Identity Dataase : Message = {ex.Message}");
+                _logger.LogError($"Error While Seeding Identity Database : Message = {ex.Message}");
             }
         }
+
+        private  async Task SeedClaimsForSuperAdminAsync( RoleManager<IdentityRole> roleManager)
+        {
+            var superAdminRole = await roleManager.FindByNameAsync(Roles.SuperAdmin.ToString());
+            if(superAdminRole is not null)
+            {
+               await AddPermissionClaimsAsync(roleManager,superAdminRole);
+            }
+        }
+
+        private  async Task AddPermissionClaimsAsync( RoleManager<IdentityRole> roleManager,IdentityRole role)
+        {
+            var allClaims=await roleManager.GetClaimsAsync(role);
+           var allPermissions= Permission.GenerateAllPermissions();
+            
+            foreach (var permission in allPermissions)
+            {
+                if (permission is not null)
+                    if (!allClaims.Any(claim => claim.Type == Permission.PermissionType && claim.Value == permission))
+                        await roleManager.AddClaimAsync(role, new Claim(Permission.PermissionType, permission));
+
+            }
+        }
+
     }
 }

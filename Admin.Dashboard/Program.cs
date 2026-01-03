@@ -1,16 +1,18 @@
 using E_Commerce.Domain.Entities.IdentityModule;
+using E_Commerce.Presistence;
 using E_Commerce.Presistence.Data.DbContexts;
 using E_Commerce.Presistence.IdentityData.DbContexts;
 using E_Commerce.Services;
 using E_Commerce.ServicesAbstraction;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace Admin.Dashboard
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +36,15 @@ namespace Admin.Dashboard
             //
             builder.Services.AddScoped<IRoleService, RoleService>();
 
+            builder.Services.AddInfrastructureServices(builder.Configuration);
+
+
             var app = builder.Build();
+
+            await app.MigrateDatabaseAsync();
+            await app.MigrateIdentityDatabaseAsync();
+            await app.SeedDataAsync();
+            await app.SeedIdentityDataAsync();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
