@@ -2,6 +2,7 @@
 using E_Commerce.ServicesAbstraction;
 using E_Commerce.Shared.AdminDashboardViewModels;
 using Microsoft.AspNetCore.Mvc;
+using StackExchange.Redis;
 using System.Threading.Tasks;
 
 namespace Admin.Dashboard.Controllers
@@ -28,12 +29,42 @@ namespace Admin.Dashboard.Controllers
             var result =await _roleService.AddRoleAsync(model);
             if (result.IsSucceed)
             {
-                TempData["SuccessMessage"] = "Role Created Successfully";
+                HandleSuccessMessage("Role Created Successfully");
                 return RedirectToAction(nameof(Index));
             }
 
-            HandleModelErrors(ModelState, result);
+            HandleErrors(ModelState, result.Errors);
             return View("index",await _roleService.GetAllRolesAsync());
         }
+
+        public async Task<IActionResult> ManagePermissions(string roleId)
+        {
+            var result=await _roleService.GetPermissionsForRoleAsync(roleId);
+            if(result.IsSucceed)
+                return View(result.Value);
+            HandleErrors(ModelState, result.Errors);
+
+                return RedirectToAction(nameof(Index));
+            
+            
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdatePermissions(PermissionFormViewModel input)
+        {
+            var result=await _roleService.UpdatePermissionsForRoleAsync(input);
+            if(result.IsSucceed)
+            {
+                HandleSuccessMessage("Role Permissions Updated Successfully.");
+               return RedirectToAction(nameof(Index));
+            } 
+            
+            HandleErrors(ModelState,result.Errors);
+            if (IsValidationError)
+                return View(input);
+            else
+                return RedirectToAction(nameof(Index));
+        }
+
     }
 }

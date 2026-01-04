@@ -11,6 +11,15 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
+@if (TempData["ErrorMessage"] is not null)
+{
+
+    <div id="Alert" class="alert alert-danger alert-dismissible fade show">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
 <div class="main-panel">
     <div class="row">
         
@@ -57,9 +66,9 @@
                                     <td>@role.Name</td>
                                     <td>
                                         <div class="d-flex justify-content-center align-items-center gap-2 text-center" >
-                                               <a class="btn  btn-primary p-2"  asp-action="ManagePermissions" asp-route-id="@role.Id">Manage Permissions</a>
-                                               <a class="btn btn-outline-warning " asp-action="Edit" asp-route-id="@role.Id">Edit</a>
-                                               <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@role.Id">Delete</a>
+                                               <a class="btn  btn-primary p-2"  asp-action="ManagePermissions" asp-route-roleId="@role.Id">Manage Permissions</a>
+                                                    <a class="btn btn-outline-warning " asp-action="Edit" asp-route-roleId="@role.Id">Edit</a>
+                                                    <a class="btn btn-outline-danger" asp-action="Delete" asp-route-roleId="@role.Id">Delete</a>
                                         </div>
                                         
                                     </td>

@@ -1,23 +1,29 @@
 ﻿using E_Commerce.ServicesAbstraction;
+using E_Commerce.Shared.AdminDashboardViewModels;
+using E_Commerce.Shared.CommonResult;
+using E_Commerce.Shared.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using E_Commerce.Shared.AdminDashboardViewModels;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using E_Commerce.Shared.CommonResult;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace E_Commerce.Services
 {
     public class RoleService : IRoleService
     {
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ILogger<RoleService> _logger;
 
-        public RoleService(RoleManager<IdentityRole> roleManager)
+        public RoleService(RoleManager<IdentityRole> roleManager,ILogger<RoleService> logger)
         {
             _roleManager = roleManager;
+            _logger = logger;
         }
 
         public async Task<Result> AddRoleAsync(RoleFormViewModel input)
@@ -36,6 +42,7 @@ namespace E_Commerce.Services
            return Result.Fail( result.Errors.Select(e=>Error.Validation(e.Code,e.Description)).ToList());
         }
 
+
         public async Task<IEnumerable<RoleViewModel>> GetAllRolesAsync()
         {
             var roles =await _roleManager.Roles.Select(role => new RoleViewModel
@@ -45,6 +52,63 @@ namespace E_Commerce.Services
             }).ToListAsync();
             return roles;
 
+        }
+
+
+        public async Task<Result<PermissionFormViewModel>> GetPermissionsForRoleAsync(string roleId)
+        {
+            if (string.IsNullOrEmpty(roleId))
+                return Error.NotFound("Error", "Role Id Is Not Valid");
+            var role=await _roleManager.FindByIdAsync(roleId);
+            if (role is null)
+                return Error.NotFound("Error", $"Role Not Found");
+            var allClaims = Permission.GenerateAllPermissions();
+            
+            var roleClaims=await _roleManager.GetClaimsAsync(role);
+
+            var permissionViewModel = new PermissionFormViewModel()
+            {
+                RoleId = roleId,
+                RoleName = role.Name ?? "",
+
+                RoleClaims = allClaims.Select(claim => new CheckBoxViewModel()
+                                            {
+                                                DisplayName = claim,
+                                                IsSelected = roleClaims.Any(roleclaim => roleclaim.Type==Permission.PermissionType&&claim == roleclaim.Value)
+                                            }).ToList()
+            };
+            return permissionViewModel;
+        }
+
+        public async Task<Result> UpdatePermissionsForRoleAsync(PermissionFormViewModel input)
+        {
+            if (input is null)
+                return Result.Fail(Error.Validation("Error","Input Not Valid"));
+            try
+            {
+                var role = await _roleManager.FindByIdAsync(input.RoleId);
+                if (role is null)
+                    return Result.Fail(Error.NotFound("Role.NotFound", "RoleId Is Not Found"));
+                var roleClaims = await _roleManager.GetClaimsAsync(role);
+                if (roleClaims is not null && roleClaims.Any())
+                {
+                    foreach (var claim in roleClaims)
+                        await _roleManager.RemoveClaimAsync(role, claim);
+                }
+                var allSelectedClaims = input.RoleClaims.Where(claim => claim.IsSelected).Select(c => c.DisplayName);
+                foreach (var claim in allSelectedClaims)
+                {
+                    await _roleManager.AddClaimAsync(role, new Claim(Permission.PermissionType, claim));
+                }
+                return Result.Ok();
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Failed to Update Permission For Role=>{ex.Message}");
+               
+            }
+            return Result.Fail(Error.Failure("Error", "Error.Failure(Failed to Update Permission For Role"));
         }
     }
 }
