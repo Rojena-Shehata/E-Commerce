@@ -66,5 +66,17 @@ namespace Admin.Dashboard.Controllers
                 return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Delete(string roleId)
+        {
+            var result=await _roleService.DeleteRoleWithItsClaimsAsync(roleId);
+            if (result.IsSucceed)
+                HandleSuccessMessage("Role Deleted Successfully");
+            else
+                HandleErrors(ModelState, result.Errors);
+            return RedirectToAction(nameof(Index));
+
+        }
+
     }
 }

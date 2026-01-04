@@ -14,5 +14,6 @@ namespace E_Commerce.ServicesAbstraction
         Task<Result> AddRoleAsync(RoleFormViewModel input);
         Task<Result<PermissionFormViewModel>> GetPermissionsForRoleAsync(string roleId);
         Task<Result> UpdatePermissionsForRoleAsync(PermissionFormViewModel input);
+        Task<Result> DeleteRoleWithItsClaimsAsync(string roleId);
     }
 }

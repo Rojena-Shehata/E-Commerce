@@ -8,7 +8,7 @@ namespace E_Commerce.Shared.AdminDashboardViewModels
 {
     public class CheckBoxViewModel
     {
-        public string DisplayName { get; set; }
+        public string DisplayName { get; set; } = default!;
         public bool IsSelected { get; set; }
     }
 }

@@ -42,6 +42,38 @@ namespace E_Commerce.Services
            return Result.Fail( result.Errors.Select(e=>Error.Validation(e.Code,e.Description)).ToList());
         }
 
+        public async Task<Result> DeleteRoleWithItsClaimsAsync(string roleId)
+        {
+            if (string.IsNullOrEmpty(roleId))
+                return Result.Fail(Error.NotFound("RoleId.NotFound", "Role Id Is Not Found"));
+            var role = await _roleManager.FindByIdAsync(roleId);
+            if(role is null)
+                return Result.Fail(Error.NotFound("Role.NotFound", "Role Not Found"));
+            var roleClaims = await _roleManager.GetClaimsAsync(role);
+            try
+            {
+                if(roleClaims is not null && roleClaims.Any())
+                {
+                    foreach(var claim in roleClaims)
+                    {
+                        if (claim is not null)
+                            await _roleManager.RemoveClaimAsync(role,claim);
+                    }
+                }
+                var result=await _roleManager.DeleteAsync(role);
+                if (result.Succeeded)
+                    return Result.Ok();
+                return Result.Fail(result.Errors.Select(e => Error.Validation(e.Code, e.Description)).ToList());
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Failed To Delete Role => {ex.Message}");
+                return Result.Fail(Error.Failure("Error", "Faile To Delete Role"));
+            }
+
+
+        }
 
         public async Task<IEnumerable<RoleViewModel>> GetAllRolesAsync()
         {
@@ -79,6 +111,7 @@ namespace E_Commerce.Services
             };
             return permissionViewModel;
         }
+
 
         public async Task<Result> UpdatePermissionsForRoleAsync(PermissionFormViewModel input)
         {
