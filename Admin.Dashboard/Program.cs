@@ -2,8 +2,9 @@ using E_Commerce.Domain.Entities.IdentityModule;
 using E_Commerce.Presistence;
 using E_Commerce.Presistence.Data.DbContexts;
 using E_Commerce.Presistence.IdentityData.DbContexts;
-using E_Commerce.Services;
+using E_Commerce.Services.AdminDashboardServices;
 using E_Commerce.ServicesAbstraction;
+using E_Commerce.ServicesAbstraction.AdmainDashboardAbstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
@@ -29,15 +30,25 @@ namespace Admin.Dashboard
                 options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
             });
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(identityOptions =>
+            {
+                identityOptions.Lockout.AllowedForNewUsers = true;
+                identityOptions.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(30);
+                identityOptions.Lockout.MaxFailedAccessAttempts = 5;
+
+            })
                             .AddEntityFrameworkStores<StoreIdentityDbContext>()
                             .AddDefaultTokenProviders();
 
             //
             builder.Services.AddScoped<IRoleService, RoleService>();
+            builder.Services.AddScoped<IAuthServiceForDashoboard, AuthServiceForDashoboard>();
 
-            builder.Services.AddInfrastructureServices(builder.Configuration);
-
+            //Cookies 
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Auth/Login";
+            });
 
             var app = builder.Build();
 
@@ -58,7 +69,7 @@ namespace Admin.Dashboard
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

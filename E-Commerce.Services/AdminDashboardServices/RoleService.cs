@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 
-namespace E_Commerce.Services
+namespace E_Commerce.Services.AdminDashboardServices
 {
     public class RoleService : IRoleService
     {

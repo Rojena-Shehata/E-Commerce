@@ -38,7 +38,7 @@ namespace Admin.Dashboard.Controllers
             TempData["ErrorMessage"]=error.Description;
         }
 
-        private void HandleValidationModelErrors(ModelStateDictionary modelState,IReadOnlyList<Error> errors)
+        protected void HandleValidationModelErrors(ModelStateDictionary modelState,IReadOnlyList<Error> errors)
         {
 
             foreach (var error in errors)
