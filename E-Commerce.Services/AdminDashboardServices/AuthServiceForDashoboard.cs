@@ -29,7 +29,8 @@ namespace E_Commerce.Services.AdminDashboardServices
             
             if (signInResult.IsLockedOut)
             {
-                return Result.Fail(Error.UnAuthorized("","Your account is locked. Please try again later."));
+                var lockoutEnd = await _userManager.GetLockoutEndDateAsync(user);
+                return Result.Fail(Error.UnAuthorized("",$"Your account is locked. Please try again on {lockoutEnd?.ToLocalTime():dd MMM yyyy - HH:mm tt}."));
             }
 
             if (signInResult.IsNotAllowed)

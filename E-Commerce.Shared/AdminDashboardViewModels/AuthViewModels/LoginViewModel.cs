@@ -15,6 +15,7 @@ namespace E_Commerce.Shared.AdminDashboardViewModels
         public string Email { get; set; } = default!;
         [Required]
         [DataType(DataType.Password)]
+        [StringLength(maximumLength:150,MinimumLength = 8,ErrorMessage = "Password length must be 8–150 characters.")]
         public string Password { get; set; }= default!; 
         public bool RememberMe {  get; set; }
     }

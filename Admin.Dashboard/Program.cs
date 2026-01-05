@@ -36,6 +36,9 @@ namespace Admin.Dashboard
                 identityOptions.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(30);
                 identityOptions.Lockout.MaxFailedAccessAttempts = 5;
 
+                identityOptions.Password.RequireUppercase = true;
+                identityOptions.Password.RequiredLength = 8;
+
             })
                             .AddEntityFrameworkStores<StoreIdentityDbContext>()
                             .AddDefaultTokenProviders();
