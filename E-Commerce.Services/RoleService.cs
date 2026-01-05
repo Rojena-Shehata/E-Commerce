@@ -5,13 +5,7 @@ using E_Commerce.Shared.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace E_Commerce.Services
 {
@@ -29,7 +23,7 @@ namespace E_Commerce.Services
         public async Task<Result> AddRoleAsync(RoleFormViewModel input)
         {
             if (input is null)
-                return Result.Fail(Error.Validation("Error", "Invalid Null Input"));
+                return Result.Fail(Error.NotFound("Error", "Invalid Null Input"));
             if ( await _roleManager.RoleExistsAsync(input.Name))
             {
                 return Result.Fail(Error.Validation("Error", "Role already exists."));
@@ -143,5 +137,57 @@ namespace E_Commerce.Services
             }
             return Result.Fail(Error.Failure("Error", "Error.Failure(Failed to Update Permission For Role"));
         }
+
+        public async Task<Result<UpdateRoleViewModel>> GetRoleForUpdateRoleAsync(string roleId)
+        {
+            var roleResult =await CheckAndGetRoleByIdAsync(roleId);
+            if (!roleResult.IsSucceed)
+                return roleResult.Errors.ToList();
+            return new UpdateRoleViewModel()
+            {
+                RoleId = roleId,
+                RoleName = roleResult.Value.Name??""
+            };
+        }
+
+
+        public async Task<Result> UpdateRoleAsync(UpdateRoleViewModel input)
+        {
+            var oldRoleResult = await CheckAndGetRoleByIdAsync(input.RoleId);
+            if(oldRoleResult.IsFail)
+                return Result.Fail(oldRoleResult.Errors.ToList());
+            //Name of role not change
+            if(oldRoleResult.Value.NormalizedName == input.RoleName.ToUpper().Trim())
+                return Result.Ok();
+
+            //check validity of wntered name
+            var IsRoleByNameExist = await _roleManager.Roles.Where(role=>role.Id!=input.RoleId&&role.NormalizedName != null).AnyAsync(role => role.NormalizedName.Trim() == input.RoleName.ToUpper().Trim());
+            if (IsRoleByNameExist)
+               return Result.Fail(Error.Validation(nameof(input.RoleName), $"Role With Name '{input.RoleName}' Already Exist!"));
+            //Update
+            oldRoleResult.Value.Name = input.RoleName.Trim();
+            oldRoleResult.Value.NormalizedName = input.RoleName.ToUpper().Trim();
+            var resultOfUpdate = await _roleManager.UpdateAsync(oldRoleResult.Value);
+            if (resultOfUpdate.Succeeded)
+                return Result.Ok();
+            
+            return Result.Fail(resultOfUpdate.Errors
+                                             .Select(e => Error.Failure(e.Code, e.Description)).ToList());
+
+        }
+
+        ////Helper Method
+        private async Task<Result<IdentityRole>>CheckAndGetRoleByIdAsync(string roleId)
+        {
+            if (string.IsNullOrEmpty(roleId))
+                return Error.NotFound("Role.NotFound", "Role Id Is Not Found");
+
+            var role = await _roleManager.FindByIdAsync(roleId);
+            if (role is null)
+                return Error.NotFound("Role.NotFound", "Role Is Not Found");
+            return role;
+            }
+
+
     }
 }

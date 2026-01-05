@@ -1,0 +1,59 @@
+﻿@model UpdateRoleViewModel
+@{
+    ViewData["Title"] = "Edit";
+}
+@* 
+<header class="d-flex justify-content-between mt-2 mb-4 align-items-center p-3 rounded-3 shadow-sm bg-light border-start border-4 border-primary">
+    <div>
+        <h2 class="text-primary fw-bold mb-1">
+            <i class="bi bi-journal-bookmark-fill me-2"></i>
+            Edit Role
+        </h2>
+        <p class="mb-0 mdi-format-color-text">
+            Modify role information
+        </p>
+    </div>
+
+
+</header> *@
+
+<div class="card">
+    <div class="card-body">
+        <div class="card-header  d-flex justify-content-between mt-2 mb-4 align-items-center p-3 rounded-3 shadow-sm bg-light border-start border-4 border-primary">
+            <div>
+                <h2 class="text-primary fw-bold mb-1">
+                    <i class="bi bi-journal-bookmark-fill me-2"></i>
+                    Edit Role
+                </h2>
+                
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                @Html.ValidationMessage("Error", new { @class = "text-danger" })
+                <form method="post" asp-action="Edit" asp-controller="Roles">
+                    <div class="mb-3">
+                        <input asp-for="RoleId" type="hidden">
+
+                        <label asp-for="RoleName" class="form-label ">Role:</label>
+                        <input asp-for="RoleName" class="form-control fa-bold" >
+                        <span asp-validation-for="RoleName"class="text-danger"></span>
+                    </div>
+                     <div class="card-footer d-flex flex-column flex-md-row gap-3 mt-4 pt-3 border-top ">
+            <button type="submit" class="btn btn-primary flex-fill gap-2 order-1 order-md-2 h6">
+                
+                Edit
+            </button>
+            <a asp-action="Index" class="btn btn-light flex-fill gap-2 order-2 order-md-1 h6">
+                Cancel
+            </a>
+
+           
+        </div>
+                   
+                </form>
+           
+            </div>
+        </div>
+    </div>
+</div>

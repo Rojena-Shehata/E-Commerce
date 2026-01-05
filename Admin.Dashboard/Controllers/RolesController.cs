@@ -78,5 +78,32 @@ namespace Admin.Dashboard.Controllers
 
         }
 
+        public async Task<IActionResult> Edit(string roleId)
+        {
+            var result=await _roleService.GetRoleForUpdateRoleAsync(roleId);
+            if(result.IsSucceed)
+                    return View(result.Value);
+            HandleErrors(ModelState, result.Errors);
+            return RedirectToAction(nameof(Index));
+        }
+        [HttpPost]
+        public async Task<IActionResult> Edit(UpdateRoleViewModel input)
+        {
+            if (!ModelState.IsValid)
+                return View(nameof(Edit), input);
+
+            var result =await _roleService.UpdateRoleAsync(input);
+            if(result.IsSucceed)
+            {
+                HandleSuccessMessage("Role Updated successfully.");
+                return RedirectToAction(nameof(Index));
+            }
+            HandleErrors(ModelState,result.Errors);
+            if (IsValidationError)
+                return View("Edit", input);
+            return RedirectToAction(nameof(Index));
+        }
+
+
     }
 }

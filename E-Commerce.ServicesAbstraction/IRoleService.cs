@@ -1,10 +1,5 @@
 ﻿using E_Commerce.Shared.AdminDashboardViewModels;
 using E_Commerce.Shared.CommonResult;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace E_Commerce.ServicesAbstraction
 {
@@ -15,5 +10,7 @@ namespace E_Commerce.ServicesAbstraction
         Task<Result<PermissionFormViewModel>> GetPermissionsForRoleAsync(string roleId);
         Task<Result> UpdatePermissionsForRoleAsync(PermissionFormViewModel input);
         Task<Result> DeleteRoleWithItsClaimsAsync(string roleId);
+        Task<Result<UpdateRoleViewModel>> GetRoleForUpdateRoleAsync(string roleId);
+        Task<Result> UpdateRoleAsync(UpdateRoleViewModel input);
     }
 }
