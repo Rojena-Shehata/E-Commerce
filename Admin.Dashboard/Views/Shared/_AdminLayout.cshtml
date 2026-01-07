@@ -1,6 +1,12 @@
-﻿
+﻿@inject IAuthorizationService authorizationService
 @{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var HaveAccessToViewRoles =(await authorizationService.AuthorizeAsync(User, Permission.Roles.View)).Succeeded;
+    var HaveAccessToViewUsers = (await authorizationService.AuthorizeAsync(User, Permission.Users.View)).Succeeded;
+    var HaveAccessToViewProducts = (await authorizationService.AuthorizeAsync(User, Permission.Products.View)).Succeeded;
+    var HaveAccessToViewTypes = (await authorizationService.AuthorizeAsync(User, Permission.Types.View)).Succeeded;
+    var HaveAccessToViewBrands = (await authorizationService.AuthorizeAsync(User, Permission.Brands.View)).Succeeded;
+    var HaveAccessToViewOrders = (await authorizationService.AuthorizeAsync(User, Permission.Orders.View)).Succeeded;
 }
 <!DOCTYPE html>
 
@@ -45,7 +51,7 @@
 
         </div>
         <!-- Sidebar Start -->
-        <aside class="left-sidebar">
+        <aside class="left-sidebar ">
             <!-- Sidebar scroll-->
             <!--logo-->
             <div>
@@ -61,7 +67,7 @@
           </div>
                 </div>
                 <!-- Sidebar navigation-->
-                <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+                <nav class="sidebar-nav flex-grow-1 overflow-y-auto scroll-sidebar" data-simplebar="">
                     <ul id="sidebarnav ">
                         <li class="nav-small-cap">
                             <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
@@ -76,89 +82,112 @@
                         <!-- ---------------------------------- -->
                         <!-- Security -->
                         <!-- ---------------------------------- -->
-                        <li class="nav-small-cap">
-                            <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
-                            <span class="font-weight-bold hide-menu">Security</span>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link justify-content-between  @(currentController == "Roles" ? "active" : "")"
-                               asp-controller="Roles"asp-action="index" aria-expanded="false">
-                                <div class="d-flex align-items-center gap-3">
-                                    <span class="d-flex">
-                                        <i class="ti ti-aperture"></i>
-                                    </span>
-                                    <span class="hide-menu">Roles</span>
-                                </div>
+                        @if (HaveAccessToViewRoles || HaveAccessToViewUsers)
+                        {
+                            <li class="nav-small-cap">
+                                <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
+                                <span class="font-weight-bold hide-menu">Security</span>
+                            </li>
+                        }
+                        @if (HaveAccessToViewRoles)
+                        {
+                            <li class="sidebar-item">
+                                <a class="sidebar-link justify-content-between  @(currentController == "Roles" ? "active" : "")"
+                                asp-controller="Roles"asp-action="index" aria-expanded="false">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="d-flex">
+                                            <i class="ti ti-aperture"></i>
+                                        </span>
+                                        <span class="hide-menu">Roles</span>
+                                    </div>
 
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link justify-content-between  @(currentController == "Users" ? "active" : "")"
-                               asp-controller="Users" asp-action="index" aria-expanded="false">
-                                <div class="d-flex align-items-center gap-3">
-                                    <span class="d-flex">
-                                        <i class="ti ti-user-circle"></i>
-                                    </span>
-                                    <span class="hide-menu">Users</span>
-                                </div>
+                                </a>
+                            </li>
+                        }
+                        @if (HaveAccessToViewUsers)
+                        {
+                            <li class="sidebar-item">
+                                <a class="sidebar-link justify-content-between  @(currentController == "Users" ? "active" : "")"
+                                asp-controller="Users" asp-action="index" aria-expanded="false">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="d-flex">
+                                            <i class="ti ti-user-circle"></i>
+                                        </span>
+                                        <span class="hide-menu">Users</span>
+                                    </div>
 
-                            </a>
-                        </li>
+                                </a>
+                            </li>
+                        }
                         <!-- Store Management -->
-                        <li class="nav-small-cap">
-                            <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
-                            <span class="font-weight-bold hide-menu">Store Management</span>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link justify-content-between  @(currentController == "Users" ? "active" : "")"
-                               asp-controller="Users" asp-action="index" aria-expanded="false">
-                                <div class="d-flex align-items-center gap-3">
-                                    <span class="d-flex">
-                                        <i class="ti ti-cards"></i>
-                                    </span>
-                                    <span class="hide-menu">Products</span>
-                                </div>
+                        @if (HaveAccessToViewBrands || HaveAccessToViewTypes || HaveAccessToViewProducts||HaveAccessToViewOrders)
+                        {
+                            <li class="nav-small-cap">
+                                <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
+                                <span class="font-weight-bold hide-menu">Store Management</span>
+                            </li>
+                        }
+                        @if (HaveAccessToViewProducts)
+                        {
+                            <li class="sidebar-item">
+                                <a class="sidebar-link justify-content-between  @(currentController == "Products" ? "active" : "")"
+                                asp-controller="Products" asp-action="index" aria-expanded="false">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="d-flex">
+                                            <i class="ti ti-cards"></i>
+                                        </span>
+                                        <span class="hide-menu">Products</span>
+                                    </div>
 
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link justify-content-between  @(currentController == "Users" ? "active" : "")"
-                               asp-controller="Users" asp-action="index" aria-expanded="false">
-                                <div class="d-flex align-items-center gap-3">
-                                    <span class="d-flex">
-                    <i class="ti ti-layout-grid"></i>
-                                    </span>
-                                    <span class="hide-menu">Brands</span>
-                                </div>
+                                </a>
+                            </li>
+                        }
+                        @if (HaveAccessToViewBrands)
+                        {
+                            <li class="sidebar-item">
+                                <a class="sidebar-link justify-content-between  @(currentController == "Brands" ? "active" : "")"
+                                   asp-controller="Brands" asp-action="index" aria-expanded="false">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="d-flex">
+                                            <i class="ti ti-layout-grid"></i>
+                                        </span>
+                                        <span class="hide-menu">Brands</span>
+                                    </div>
 
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link justify-content-between  @(currentController == "Types" ? "active" : "")"
-                               asp-controller="Users" asp-action="index" aria-expanded="false">
-                                <div class="d-flex align-items-center gap-3">
-                                    <span class="d-flex">
-                                        <i class="ti ti-qrcode"></i>
-                                    </span>
-                                    <span class="hide-menu">Types</span>
-                                </div>
+                                </a>
+                            </li>
+                        }
+                        @if (HaveAccessToViewTypes)
+                        {
+                            <li class="sidebar-item">
+                                <a class="sidebar-link justify-content-between  @(currentController == "Types" ? "active" : "")"
+                                asp-controller="Types" asp-action="index" aria-expanded="false">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="d-flex">
+                                            <i class="ti ti-qrcode"></i>
+                                        </span>
+                                        <span class="hide-menu">Types</span>
+                                    </div>
 
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link justify-content-between"
-                               href="#" aria-expanded="false">
-                                <div class="d-flex align-items-center gap-3">
-                                    <span class="d-flex">
-                                        <i class="ti ti-shopping-cart"></i>
-                                    </span>
-                                    <span class="hide-menu">Orders</span>
-                                </div>
+                                </a>
+                            </li>
+                        }
+                        @if (HaveAccessToViewOrders)
+                        {
+                            <li class="sidebar-item">
+                                <a class="sidebar-link justify-content-between @(currentController == "Types" ? "active" : "")"
+                                   asp-action="Index" asp-controller="Orders" aria-expanded="false">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="d-flex">
+                                            <i class="ti ti-shopping-cart"></i>
+                                        </span>
+                                        <span class="hide-menu">Orders</span>
+                                    </div>
 
-                            </a>
-                        </li>
-                       
-                   
+                                </a>
+                            </li>
+                        }
+
                         
                     </ul>
                 </nav>

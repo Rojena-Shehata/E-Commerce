@@ -9,10 +9,10 @@ namespace E_Commerce.Shared.Enums
     public enum Modules
     {
         Products,
+        Brands,
+        Types,
         Roles,
         Users,
-        Orders,
-        Baskets,
-        Payments
+        Orders      
     }
 }

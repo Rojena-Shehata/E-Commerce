@@ -1,15 +1,16 @@
 ﻿using E_Commerce.Shared.Enums;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace E_Commerce.Shared.Constants
 {
-    public static class Permission
+    public static partial class Permission
     {
-        public static string PermissionType => "Permission";
+        public const string PermissionType = "Permission";
         public static List<string> GeneratePermissionList(string module)
         {
             return new List<string>()
@@ -34,5 +35,7 @@ namespace E_Commerce.Shared.Constants
             }
             return allPermissions;
         }
+  
+       
     }
 }

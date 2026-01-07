@@ -1,3 +1,4 @@
+using Admin.Dashboard.Authorization;
 using E_Commerce.Domain.Entities.IdentityModule;
 using E_Commerce.Presistence;
 using E_Commerce.Presistence.Data.DbContexts;
@@ -5,6 +6,7 @@ using E_Commerce.Presistence.IdentityData.DbContexts;
 using E_Commerce.Services.AdminDashboardServices;
 using E_Commerce.ServicesAbstraction;
 using E_Commerce.ServicesAbstraction.AdmainDashboardAbstractions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
@@ -19,6 +21,15 @@ namespace Admin.Dashboard
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            //Register services for Permission Based Authorization
+            builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>(); //policyProvider
+            builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>(); //AuthorizationHandler
+
+            builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+            {
+                options.ValidationInterval = TimeSpan.Zero;
+            });
             //dbcontext
             builder.Services.AddDbContext<StoreDbContext>(options =>
             {
