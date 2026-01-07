@@ -45,6 +45,9 @@ namespace E_Commerce.Services.AdminDashboardServices
             return Result.Fail(Error.InvalidCredentials("", "Invalid email or password."));
         }
 
-        
+        public async Task LogoutAsync()
+        {
+            await _signInManager.SignOutAsync();
+        }
     }
 }

@@ -25,5 +25,11 @@ namespace Admin.Dashboard.Controllers
             HandleValidationModelErrors(ModelState, result.Errors);
             return View(input);
         }
+
+        public async Task<IActionResult> Logout()
+        {
+           await _authService.LogoutAsync();
+            return RedirectToAction(nameof(Login));
+        }
     }
 }

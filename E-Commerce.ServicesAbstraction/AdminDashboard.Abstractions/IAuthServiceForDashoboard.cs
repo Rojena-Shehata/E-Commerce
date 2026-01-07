@@ -11,5 +11,6 @@ namespace E_Commerce.ServicesAbstraction.AdmainDashboardAbstractions
     public interface IAuthServiceForDashoboard
     {
         Task<Result> LoginAsync(LoginViewModel input);
+        Task LogoutAsync();
     }
 }
