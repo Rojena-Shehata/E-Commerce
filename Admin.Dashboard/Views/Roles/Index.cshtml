@@ -51,8 +51,9 @@
 
                     @if (Model is not null && Model.Any())
                     {
-                    <div class="d-flex justify-content-between align-items-center p-3 border rounded shadow-sm bg-white">
-                    <table class="table  table-hover mt-5 text-center align-items-center">
+                    <div class="p-3 border rounded shadow-sm bg-white">
+                            <div class="table-responsive mt-4">
+                            <table class="table table-hover text-center align-items-center">
                         <thead >
                             <tr>
                                 <th ><h5> Id</h5> </th>
@@ -99,6 +100,7 @@
                             }
                         </tbody>
                     </table>
+                </div>
                 </div>
                 }
                 else

@@ -11,6 +11,7 @@ namespace E_Commerce.Domain.Entities.IdentityModule
     {
         public string DisplayName { get; set; } = default!;
         public Address Address { get; set; } = default!;
+        public bool HasAdminAccount { get; set; }
 
     }
 }

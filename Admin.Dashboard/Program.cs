@@ -1,11 +1,14 @@
 using Admin.Dashboard.Authorization;
+using E_Commerce.Domain.Contracts;
 using E_Commerce.Domain.Entities.IdentityModule;
 using E_Commerce.Presistence;
 using E_Commerce.Presistence.Data.DbContexts;
 using E_Commerce.Presistence.IdentityData.DbContexts;
+using E_Commerce.Presistence.Repositories;
 using E_Commerce.Services.AdminDashboardServices;
 using E_Commerce.ServicesAbstraction;
 using E_Commerce.ServicesAbstraction.AdmainDashboardAbstractions;
+using E_Commerce.ServicesAbstraction.AdminDashboard.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -56,6 +59,8 @@ namespace Admin.Dashboard
 
             //
             builder.Services.AddScoped<IRoleService, RoleService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IAuthServiceForDashoboard, AuthServiceForDashoboard>();
 
             //Cookies 
