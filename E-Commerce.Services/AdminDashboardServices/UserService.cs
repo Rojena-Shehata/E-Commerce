@@ -21,6 +21,7 @@ namespace E_Commerce.Services.AdminDashboardServices
                              ILogger<UserService> _logger) : IUserService
     {
        
+
         public async Task<IEnumerable<UserViewModel>?> GetAllUsersAsync()
         {
 
@@ -82,15 +83,14 @@ namespace E_Commerce.Services.AdminDashboardServices
 
         }
 
-        public async Task<Result> UpdateRolesForUser(UserFormViewModel input)
+        public async Task<Result> UpdateRolesForUserASync(UserFormViewModel input)
         {
             if (input is null)
                 return Error.NotFound("Input.NotFound", "Input Is not valid");
-            if(string.IsNullOrWhiteSpace(input.Id))
-                return Error.NotFound("UserId.NotFound", "User Not Found");          
-            var user =await _userManager.FindByIdAsync(input.Id);
-            if (user is null)
-                return Error.NotFound("User.NotFound", "User Not Found");
+            var userResult=await GetAndValidateUserAndUserIdByIdAsync(input.Id);
+            if(userResult.IsFail)
+                return userResult.Errors.ToList();
+            var user = userResult.Value;
             if (input.Roles is null || input.Roles.Count() == 0)
                 return Result.Ok();
             var oldUserRoles =await _userManager.GetRolesAsync(user);
@@ -120,5 +120,47 @@ namespace E_Commerce.Services.AdminDashboardServices
             return Error.Failure("UpdateUserRoles", "An error occurred while updating user roles. Please try again later.");
 
         }
+
+
+        public async Task<Result> DeleteUserAsync(string userId)
+        {
+            var userResult = await GetAndValidateUserAndUserIdByIdAsync(userId);
+            if (userResult.IsFail)
+                return userResult.Errors.ToList();
+            var user = userResult.Value;
+            //null user Was checked
+            try
+            {
+
+               var identityResultOfDelete=await _userManager.DeleteAsync(user);
+                if (identityResultOfDelete is not null && identityResultOfDelete.Succeeded)
+                    return Result.Ok();
+                if (identityResultOfDelete is null)
+                    return Error.Failure("Delete.Fail", "Failt To Delete User");
+                return identityResultOfDelete.Errors.Select(error=>Error.Forbidden(error.Code,error.Description)).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to delete user: {userId} with message => {ex.Message}");
+            }
+            return Error.Failure("Delete.Fail", "Failt To Delete User");
+        }
+
+
+
+
+
+        #region Helper Method
+        private async Task<Result<ApplicationUser>> GetAndValidateUserAndUserIdByIdAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                return Error.NotFound("UserId.NotFound", "User Not Found");
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user is null)
+                return Error.NotFound("User.NotFound", "User Not Found");
+            return user;
+        }
+
+        #endregion
     }
 }

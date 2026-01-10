@@ -17,6 +17,8 @@ namespace Admin.Dashboard.Controllers
             var users = await _userService.GetAllUsersAsync();
             return View(users);
         }
+
+
         [Authorize(Permission.Users.Edit)]
         public async Task<IActionResult> Edit(string userId)
         {
@@ -26,6 +28,8 @@ namespace Admin.Dashboard.Controllers
             HandleErrors(ModelState, result.Errors);
             return RedirectToAction(nameof(Index));
         }
+
+
         [Authorize(Permission.Users.Edit)]
         [HttpPost]
         public async Task<IActionResult> Edit(UserFormViewModel model)
@@ -34,7 +38,7 @@ namespace Admin.Dashboard.Controllers
             {
                 return View("Edit",model);
             }
-            var result=await _userService.UpdateRolesForUser(model);
+            var result=await _userService.UpdateRolesForUserASync(model);
             if(result.IsSucceed)
             {
                 HandleSuccessMessage("User roles updated successfully.");
@@ -45,6 +49,18 @@ namespace Admin.Dashboard.Controllers
                 return View(model);
             else
                 return RedirectToAction(nameof(Index));
+        }
+
+
+        public async Task<IActionResult> Delete(string userId)
+        {
+            var result=await _userService.DeleteUserAsync(userId);
+            if(result.IsSucceed)
+                HandleSuccessMessage("User Deleted Successfully");
+            else
+                HandleErrors(ModelState,result.Errors);
+           return RedirectToAction(nameof(Index));
+
         }
 
     }

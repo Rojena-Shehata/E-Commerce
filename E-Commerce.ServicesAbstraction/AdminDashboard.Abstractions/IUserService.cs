@@ -13,6 +13,8 @@ namespace E_Commerce.ServicesAbstraction.AdminDashboard.Abstractions
     {
         Task<IEnumerable<UserViewModel>?> GetAllUsersAsync();
         Task<Result<UserFormViewModel>> GetUserForUpdateAsync(string userId);
-        Task<Result> UpdateRolesForUser(UserFormViewModel input);
+        Task<Result> UpdateRolesForUserASync(UserFormViewModel input);
+        Task<Result> DeleteUserAsync(string userId);
+
     }
 }

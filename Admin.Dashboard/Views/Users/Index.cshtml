@@ -85,7 +85,7 @@
                                                     }
                                                     @if (HasAccessToDeleteUser)
                                                     {
-                                                        <form method="post" asp-action="Delete" asp-controller="Roles" asp-route-roleId="@user.Id">
+                                                        <form method="post" asp-action="Delete" asp-controller="Users" asp-route-userId="@user.Id">
                                                                 <button type="submit" class="btn btn-outline-danger w-100"
                                                                     onclick="return confirm('Are you sure you want to delete this user? This action cannot be undone.')">
                                                                 Delete
