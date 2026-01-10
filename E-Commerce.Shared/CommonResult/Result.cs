@@ -34,6 +34,10 @@ namespace E_Commerce.Shared.CommonResult
         public static Result Fail(Error error) => new Result(error);
         public static Result Fail(List<Error> errors) => new Result(errors);
 
+
+        public static implicit operator Result(Error error) => Fail(error);//Result.Fail
+        public static implicit operator Result(List<Error> errors) => Fail(errors);
+
     }
 
 

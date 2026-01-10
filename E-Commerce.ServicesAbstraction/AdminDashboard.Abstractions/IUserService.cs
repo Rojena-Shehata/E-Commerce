@@ -1,4 +1,5 @@
 ﻿using E_Commerce.Shared.AdminDashboardViewModels;
+using E_Commerce.Shared.AdminDashboardViewModels.UserViewModels;
 using E_Commerce.Shared.CommonResult;
 using System;
 using System.Collections.Generic;
@@ -11,5 +12,7 @@ namespace E_Commerce.ServicesAbstraction.AdminDashboard.Abstractions
     public interface IUserService
     {
         Task<IEnumerable<UserViewModel>?> GetAllUsersAsync();
+        Task<Result<UserFormViewModel>> GetUserForUpdateAsync(string userId);
+        Task<Result> UpdateRolesForUser(UserFormViewModel input);
     }
 }

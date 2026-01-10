@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace E_Commerce.Shared.AdminDashboardViewModels
 {
-    public class UserViewModel:UserBaseViewModel
+    public class UserFormViewModel:UserBaseViewModel
     {
-        
-        
-        public IEnumerable<string?> Roles { get; set; } = [];
+        public List<CheckBoxViewModel> Roles { get; set; }
     }
 }

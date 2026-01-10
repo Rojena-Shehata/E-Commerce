@@ -14,8 +14,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" type="image/png" href="~/images/storeLgo.jpg" />
+    <link rel="stylesheet" href="~/lib/simplebar/dist/simplebar.css" />
+    <link rel="stylesheet" href="~/css/icons/tabler-icons/tabler-icons.css" />
     <link rel="stylesheet" href="~/css/styles.min.css" />
+
     <title>@ViewBag.Title</title>
 </head>
 
@@ -278,9 +280,10 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/sidebarmenu.js"></script>
     <script src="~/js/app.min.js"></script>
+    <script src="~/js/dashboard.js"></script>
     <script src="~/lib/apexcharts/dist/apexcharts.min.js"></script>
     <script src="~/lib/simplebar/dist/simplebar.js"></script>
-    <script src="~/js/dashboard.js"></script>
+    
     <!-- solar icons -->
     <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
