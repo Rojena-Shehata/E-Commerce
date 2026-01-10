@@ -71,4 +71,14 @@
 
 @section Scripts{
         <partial name="_ValidationScriptsPartial" />
+        <script>
+                       $(function () {
+                const token = $('input[name="__RequestVerificationToken"]').val();
+                if (token) {
+                    $.ajaxSetup({
+                        headers: { 'RequestVerificationToken': token }
+                    });
+                }
+            });
+        </script>
 }

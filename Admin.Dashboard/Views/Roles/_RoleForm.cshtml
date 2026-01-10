@@ -2,6 +2,7 @@
 
 @Html.ValidationMessage("Error", new { @class = "text-danger" })
 <form method="post" asp-action="Add" class="mb-3">
+    @Html.AntiForgeryToken()
     <div class="input-group mb-3" >
        
         <input asp-for="Name" placeholder="Role Name ..." class="form-control " />

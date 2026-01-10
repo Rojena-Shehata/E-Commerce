@@ -5,6 +5,7 @@
 }
 
 <form asp-action="UpdatePermissions" method="post">
+    @Html.AntiForgeryToken();
     <div class="card mt-4">
         <div class="card-header  d-flex justify-content-between mt-2 mb-4 align-items-center p-3 rounded-3 shadow-sm bg-light border-start border-4 border-primary">
             <div>
@@ -81,3 +82,18 @@
             
     </div>
 </form>
+
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+                   $(function () {
+            const token = $('input[name="__RequestVerificationToken"]').val();
+            if (token) {
+                $.ajaxSetup({
+                    headers: { 'RequestVerificationToken': token }
+                });
+            }
+        });
+    </script>
+}

@@ -11,6 +11,7 @@ using E_Commerce.ServicesAbstraction.AdmainDashboardAbstractions;
 using E_Commerce.ServicesAbstraction.AdminDashboard.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
@@ -23,7 +24,10 @@ namespace Admin.Dashboard
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add<AutoValidateAntiforgeryTokenAttribute>();
+            });
 
             //Register services for Permission Based Authorization
             builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>(); //policyProvider

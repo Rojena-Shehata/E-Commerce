@@ -267,8 +267,9 @@
                 <div class="container-fluid">
 
     <div>
-                        
-        @RenderBody()
+                        @Html.AntiForgeryToken()
+
+                        @RenderBody()
     </div>
     </div>
     </div>

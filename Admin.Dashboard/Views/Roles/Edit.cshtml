@@ -32,6 +32,7 @@
             <div class="card-body">
                 @Html.ValidationMessage("Error", new { @class = "text-danger" })
                 <form method="post" asp-action="Edit" asp-controller="Roles">
+                    @Html.AntiForgeryToken();
                     <div class="mb-3">
                         <input asp-for="RoleId" type="hidden">
 
@@ -57,3 +58,16 @@
         </div>
     </div>
 </div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+                   $(function () {
+            const token = $('input[name="__RequestVerificationToken"]').val();
+            if (token) {
+                $.ajaxSetup({
+                    headers: { 'RequestVerificationToken': token }
+                });
+            }
+        });
+    </script>
+}
